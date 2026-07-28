@@ -1,0 +1,252 @@
+.player-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.player-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.player-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.player-input {
+  width: 100%;
+  max-width: 320px;
+  padding: 1rem 1.5rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.player-input:focus {
+  border-color: var(--accent);
+}
+
+.player-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--accent), #0088cc);
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.player-btn:disabled {
+  opacity: 0.4;
+}
+
+.player-error {
+  color: var(--danger);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Car selection */
+.car-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.car-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.car-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.car-card.taken {
+  opacity: 0.4;
+}
+
+.car-emoji {
+  font-size: 2.5rem;
+}
+
+.car-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.car-taken-label {
+  font-size: 0.75rem;
+  color: var(--danger);
+}
+
+/* Waiting */
+.waiting .pulse-icon {
+  font-size: 4rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* Racing */
+.racing {
+  justify-content: flex-start;
+  padding-top: 3rem;
+}
+
+.rank-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+.volume-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.2), transparent);
+  border: 3px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.volume-emoji {
+  font-size: 3rem;
+}
+
+.volume-label {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.volume-percent {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.mini-progress {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.mini-progress-bar {
+  flex: 1;
+  height: 12px;
+  background: var(--bg-card);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 6px;
+}
+
+.opponents {
+  width: 100%;
+  max-width: 320px;
+}
+
+.opponent-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.opponent-row span:first-child {
+  width: 80px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.opponent-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-card);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.opponent-fill {
+  height: 100%;
+  background: var(--text-secondary);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+/* Mic error */
+.mic-error h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.mic-instructions {
+  text-align: left;
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.mic-instructions p {
+  margin-bottom: 0.5rem;
+}
+
+/* Results */
+.results .result-place {
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+  margin-bottom: 1rem;
+}
+
+.results h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}

@@ -1,0 +1,297 @@
+import express, { type Express } from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import {
+  SOCKET_EVENTS,
+  GAME_CONFIG,
+} from '@decibel-racing/shared';
+import {
+  createRoom,
+  getRoom,
+  serializeRoom,
+  addPlayer,
+  rejoinPlayer,
+  selectCar,
+  updateVolume,
+  setRoomLogo,
+  setRoomCity,
+  setRoomCars,
+  startCountdown,
+  restartRace,
+  newGame,
+  removePlayer,
+  getRaceResultsForRoom,
+  getActiveRooms,
+  consumeRaceFinished,
+} from './rooms.js';
+import { setupStaticFrontend } from './static.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const app: Express = express();
+const httpServer = createServer(app);
+
+const allowedOrigins = isProduction
+  ? true
+  : process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `logo-${Date.now()}${ext}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: GAME_CONFIG.LOGO_MAX_SIZE_MB * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if ((GAME_CONFIG.ALLOWED_LOGO_TYPES as readonly string[]).includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Недопустимый формат файла'));
+    }
+  },
+});
+
+app.post('/api/upload-logo/:roomId', upload.single('logo'), (req, res) => {
+  const roomId = String(req.params.roomId);
+  const room = getRoom(roomId);
+  if (!room) {
+    return res.status(404).json({ error: 'Комната не найдена' });
+  }
+  if (!req.file) {
+    return res.status(400).json({ error: 'Файл не загружен' });
+  }
+  const logoUrl = `/uploads/${req.file.filename}`;
+  setRoomLogo(roomId, logoUrl);
+  broadcastRoomUpdate(roomId);
+  res.json({ logoUrl });
+});
+
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: Date.now() });
+});
+
+const io = new Server(httpServer, {
+  cors: { origin: allowedOrigins, credentials: true },
+});
+
+const socketRooms = new Map<string, string>();
+
+function broadcastRoomUpdate(roomId: string): void {
+  const room = getRoom(roomId);
+  if (!room) return;
+  io.to(roomId).emit(SOCKET_EVENTS.SERVER_ROOM_UPDATE, serializeRoom(room));
+}
+
+function emitCountdownTick(roomId: string): void {
+  const room = getRoom(roomId);
+  if (!room || room.countdownValue === undefined) return;
+  io.to(roomId).emit(SOCKET_EVENTS.SERVER_COUNTDOWN_TICK, {
+    value: room.countdownValue,
+  });
+}
+
+io.on('connection', (socket) => {
+  socket.on(SOCKET_EVENTS.ADMIN_CREATE_ROOM, (data: { maxPlayers: 2 | 4; city: string }, cb) => {
+    try {
+      const room = createRoom(data.maxPlayers, data.city);
+      socket.join(room.id);
+      socketRooms.set(socket.id, room.id);
+      const runtime = getRoom(room.id);
+      if (runtime) runtime.adminSocketId = socket.id;
+      cb({ roomId: room.id, room });
+    } catch (err) {
+      cb({ error: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_JOIN_ROOM, (data: { roomId: string }, cb) => {
+    const room = getRoom(data.roomId);
+    if (!room) return cb({ error: 'Комната не найдена' });
+    socket.join(data.roomId);
+    socketRooms.set(socket.id, data.roomId);
+    room.adminSocketId = socket.id;
+    cb({ room: serializeRoom(room) });
+  });
+
+  socket.on(SOCKET_EVENTS.BIGSCREEN_JOIN, (data: { roomId: string }, cb) => {
+    const room = getRoom(data.roomId);
+    if (!room) return cb({ error: 'Комната не найдена' });
+    socket.join(data.roomId);
+    socketRooms.set(socket.id, data.roomId);
+    cb({ room: serializeRoom(room) });
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_SELECT_CITY, (data: { roomId: string; city: string }) => {
+    try {
+      setRoomCity(data.roomId, data.city);
+      broadcastRoomUpdate(data.roomId);
+    } catch (err) {
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_SET_CARS, (data: { roomId: string; carIds: string[] }) => {
+    try {
+      setRoomCars(data.roomId, data.carIds);
+      broadcastRoomUpdate(data.roomId);
+    } catch (err) {
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_START_COUNTDOWN, (data: { roomId: string }) => {
+    try {
+      startCountdown(data.roomId);
+      broadcastRoomUpdate(data.roomId);
+      const room = getRoom(data.roomId);
+      if (room) {
+        emitCountdownTick(data.roomId);
+        const tickWatcher = setInterval(() => {
+          const r = getRoom(data.roomId);
+          if (!r || r.status !== 'countdown') {
+            clearInterval(tickWatcher);
+            if (r?.status === 'racing') {
+              broadcastRoomUpdate(data.roomId);
+            }
+            return;
+          }
+          emitCountdownTick(data.roomId);
+          broadcastRoomUpdate(data.roomId);
+        }, 1000);
+      }
+    } catch (err) {
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_RESTART_RACE, (data: { roomId: string }) => {
+    try {
+      restartRace(data.roomId);
+      broadcastRoomUpdate(data.roomId);
+    } catch (err) {
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_NEW_GAME, (data: { roomId: string }) => {
+    try {
+      newGame(data.roomId);
+      broadcastRoomUpdate(data.roomId);
+    } catch (err) {
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    }
+  });
+
+  socket.on(
+    SOCKET_EVENTS.PLAYER_JOIN,
+    (data: { roomId: string; nickname: string; persistedId?: string }, cb) => {
+      try {
+        const room = getRoom(data.roomId);
+        if (!room) return cb({ error: 'Комната не найдена' });
+
+        socket.join(data.roomId);
+        socketRooms.set(socket.id, data.roomId);
+
+        const { player, persistedId } = addPlayer(data.roomId, socket.id, data.nickname, data.persistedId);
+
+        broadcastRoomUpdate(data.roomId);
+        cb({ player, room: serializeRoom(room), persistedId });
+      } catch (err) {
+        cb({ error: (err as Error).message });
+      }
+    }
+  );
+
+  socket.on(
+    SOCKET_EVENTS.PLAYER_REJOIN,
+    (data: { roomId: string; persistedId: string }, cb) => {
+      const room = getRoom(data.roomId);
+      if (!room) return cb({ error: 'Комната не найдена' });
+
+      const player = rejoinPlayer(data.roomId, socket.id, data.persistedId);
+      if (!player) return cb({ error: 'Игрок не найден' });
+
+      socket.join(data.roomId);
+      socketRooms.set(socket.id, data.roomId);
+      cb({ player, room: serializeRoom(room) });
+    }
+  );
+
+  socket.on(SOCKET_EVENTS.PLAYER_SELECT_CAR, (data: { carId: string }, cb) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return cb?.({ error: 'Не в комнате' });
+    try {
+      selectCar(roomId, socket.id, data.carId);
+      broadcastRoomUpdate(roomId);
+      cb?.({ ok: true });
+    } catch (err) {
+      cb?.({ error: (err as Error).message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.PLAYER_VOLUME, (data: { value: number }) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return;
+    updateVolume(roomId, socket.id, data.value);
+  });
+
+  socket.on('disconnect', () => {
+    const roomId = socketRooms.get(socket.id);
+    if (roomId) {
+      const room = getRoom(roomId);
+      if (room && room.status === 'lobby') {
+        removePlayer(roomId, socket.id);
+        broadcastRoomUpdate(roomId);
+      }
+    }
+    socketRooms.delete(socket.id);
+  });
+});
+
+setInterval(() => {
+  for (const room of getActiveRooms()) {
+    if (room.status === 'racing') {
+      broadcastRoomUpdate(room.id);
+    }
+    if (consumeRaceFinished(room.id)) {
+      broadcastRoomUpdate(room.id);
+      const results = getRaceResultsForRoom(room.id);
+      io.to(room.id).emit(SOCKET_EVENTS.SERVER_RACE_FINISHED, { results });
+    }
+  }
+}, GAME_CONFIG.TICK_RATE_MS);
+
+if (isProduction) {
+  const served = setupStaticFrontend(app, __dirname);
+  if (served) {
+    console.log('📦 Serving production frontend from /admin, /screen, /join');
+  }
+}
+
+const PORT = Number(process.env.PORT) || 3001;
+httpServer.listen({ port: PORT, host: '0.0.0.0' }, () => {
+  console.log(`🏎️  Decibel Racing server running on port ${PORT}`);
+});
+
+export { io, app, httpServer };

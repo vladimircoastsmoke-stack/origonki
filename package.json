@@ -1,0 +1,19 @@
+{
+  "name": "decibel-racing",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "build:prod": "pnpm build && node scripts/copy-static.mjs",
+    "start:prod": "NODE_ENV=production node apps/server/dist/index.js",
+    "share": "node scripts/share.mjs",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "deploy:render": "render deploy"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

@@ -1,0 +1,10 @@
+node_modules
+.turbo
+dist
+apps/server/public
+apps/server/uploads/*
+!apps/server/uploads/.gitkeep
+.git
+*.log
+.env
+.env.local
