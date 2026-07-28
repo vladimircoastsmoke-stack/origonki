@@ -7,9 +7,11 @@
     "build:prod": "pnpm build && node scripts/copy-static.mjs",
     "start:prod": "NODE_ENV=production node apps/server/dist/index.js",
     "share": "node scripts/share.mjs",
+    "test-with-friend": "node scripts/share.mjs",
+    "deploy": "node scripts/deploy-render.mjs",
+    "deploy:render": "node scripts/deploy-render.mjs",
     "test": "turbo run test",
-    "lint": "turbo run lint",
-    "deploy:render": "render deploy"
+    "lint": "turbo run lint"
   },
   "devDependencies": {
     "turbo": "^2.3.3",

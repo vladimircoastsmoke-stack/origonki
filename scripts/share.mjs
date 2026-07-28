@@ -36,10 +36,11 @@ console.log('  • Player: URL/join/КОД_КОМНАТЫ');
 console.log('  • Screen: URL/screen/?room=КОД');
 console.log('═══════════════════════════════════════════════════\n');
 
-const tunnel = spawn('npx', ['--yes', 'cloudflared@latest', 'tunnel', '--url', 'http://localhost:3001'], {
-  cwd: root,
-  stdio: 'inherit',
-});
+const tunnel = spawn(
+  'npx',
+  ['--yes', 'cloudflared@latest', 'tunnel', '--protocol', 'http2', '--url', 'http://localhost:3001'],
+  { cwd: root, stdio: 'inherit' }
+);
 
 process.on('SIGINT', () => {
   tunnel.kill();
