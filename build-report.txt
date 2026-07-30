@@ -1,0 +1,4 @@
+(eval):1: command not found: pnpm
+---SHARED_EXIT: 127---
+(eval):1: command not found: pnpm
+---ADMIN_EXIT: 127---

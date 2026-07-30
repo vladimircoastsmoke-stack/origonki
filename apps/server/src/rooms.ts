@@ -177,6 +177,16 @@ export function setRoomCity(roomId: string, city: string): void {
   room.city = city;
 }
 
+export function setRoomMaxPlayers(roomId: string, maxPlayers: MaxPlayers): void {
+  const room = rooms.get(roomId);
+  if (!room) throw new Error('Комната не найдена');
+  if (room.status !== 'lobby') throw new Error('Нельзя менять лимит во время гonки');
+  if (room.players.length > maxPlayers) {
+    throw new Error(`Уже подключено ${room.players.length} — нельзя меньше ${room.players.length}`);
+  }
+  room.maxPlayers = maxPlayers;
+}
+
 export function setRoomCars(roomId: string, carIds: string[]): void {
   const room = rooms.get(roomId);
   if (!room) throw new Error('Комната не найдена');

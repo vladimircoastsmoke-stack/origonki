@@ -8,6 +8,8 @@ export const SOCKET_EVENTS = {
   ADMIN_RESTART_RACE: 'admin:restartRace',
   ADMIN_JOIN_ROOM: 'admin:joinRoom',
   ADMIN_NEW_GAME: 'admin:newGame',
+  ADMIN_SET_MAX_PLAYERS: 'admin:setMaxPlayers',
+  ADMIN_CLOSE_ROOM: 'admin:closeRoom',
 
   // Player
   PLAYER_JOIN: 'player:join',

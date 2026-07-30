@@ -457,3 +457,44 @@
 .audio-unlock-hint:hover {
   filter: brightness(1.08);
 }
+
+.setup-steps {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.setup-steps .active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.btn-back {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--border);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-back:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-group-nav {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.section-nav {
+  padding-top: 0;
+}
+
+.lobby-meta {
+  text-align: center;
+  margin-top: 0.25rem;
+}

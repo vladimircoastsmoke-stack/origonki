@@ -23,9 +23,11 @@ import {
   setRoomLogo,
   setRoomCity,
   setRoomCars,
+  setRoomMaxPlayers,
   startCountdown,
   restartRace,
   newGame,
+  deleteRoom,
   removePlayer,
   getRaceResultsForRoom,
   getActiveRooms,
@@ -160,6 +162,28 @@ io.on('connection', (socket) => {
     } catch (err) {
       socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
     }
+  });
+
+  socket.on(
+    SOCKET_EVENTS.ADMIN_SET_MAX_PLAYERS,
+    (data: { roomId: string; maxPlayers: MaxPlayers }, cb) => {
+      try {
+        setRoomMaxPlayers(data.roomId, data.maxPlayers);
+        broadcastRoomUpdate(data.roomId);
+        cb?.({ ok: true });
+      } catch (err) {
+        const message = (err as Error).message;
+        socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message });
+        cb?.({ error: message });
+      }
+    },
+  );
+
+  socket.on(SOCKET_EVENTS.ADMIN_CLOSE_ROOM, (data: { roomId: string }, cb) => {
+    deleteRoom(data.roomId);
+    socket.leave(data.roomId);
+    socketRooms.delete(socket.id);
+    cb?.({ ok: true });
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_START_COUNTDOWN, (data: { roomId: string }) => {
