@@ -98,16 +98,18 @@ if (!remote) {
 console.log('');
 console.log('✅ Код на GitHub!');
 console.log('');
-console.log('🌐 Открываю Render для финального шага...');
+console.log('☁️  Render автоматически пересоберёт сайт за 3–5 минут');
+console.log('   (если Blueprint уже был применён ранее)');
 console.log('');
-console.log('   В браузере:');
-console.log('   → New Blueprint Instance');
-console.log('   → Подключите репозиторий origonki');
-console.log('   → Нажмите Apply');
-console.log('   → Подождите ~5 минут');
+console.log('   https://decibel-racing.onrender.com/admin/');
 console.log('');
-console.log('   После деплоя ваш URL:');
-console.log('   https://origonki-xxxx.onrender.com/admin/');
+console.log('🌐 Открываю Render...');
+console.log('');
+console.log('   Первый деплой:');
+console.log('   → New Blueprint Instance → origonki → Apply');
+console.log('');
+console.log('   Повторный деплой: push — Render сам пересобирает');
+console.log('   Или: bash 7-АВТО-ДЕПЛОЙ.command');
 console.log('');
 
 openUrl('https://dashboard.render.com/blueprints');

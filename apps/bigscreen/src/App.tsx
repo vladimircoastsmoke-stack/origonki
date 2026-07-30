@@ -13,6 +13,7 @@ import { RaceTrack } from './components/RaceTrack';
 import { Countdown, Podium } from './components/Overlays';
 import { PixelScene } from './components/PixelScene';
 import { CarSpriteMini } from './components/CarSprite';
+import { useGameAudio } from './hooks/useGameAudio';
 import './App.css';
 import './pixel-scenes.css';
 
@@ -38,6 +39,18 @@ function App() {
   const socket = getSocket();
   const city = getCityById(room?.city ?? CITIES[0].id);
   const logoUrl = room?.eventLogoUrl ? `${getServerUrl()}${room.eventLogoUrl}` : undefined;
+
+  const audioStatus = room?.status === 'countdown'
+    ? 'countdown'
+    : room?.status === 'racing'
+      ? 'racing'
+      : room?.status === 'finished'
+        ? 'finished'
+        : room
+          ? 'waiting'
+          : undefined;
+
+  const { needsUnlock, unlock } = useGameAudio(audioStatus, city.id, countdown);
 
   useEffect(() => {
     if (!roomIdParam) {
@@ -72,6 +85,12 @@ function App() {
     };
   }, [socket, roomIdParam]);
 
+  const audioHint = needsUnlock ? (
+    <button type="button" className="audio-unlock-hint" onClick={() => void unlock()}>
+      🔊 Нажмите для музыки
+    </button>
+  ) : null;
+
   if (error) {
     return (
       <div className="bigscreen theme-dendy error-screen">
@@ -94,6 +113,7 @@ function App() {
       <div className={`bigscreen theme-dendy scene-${city.scene}`}>
         <CityBackdrop cityId={city.id} />
         <Countdown value={countdown ?? room.countdownValue} city={city} />
+        {audioHint}
       </div>
     );
   }
@@ -103,6 +123,7 @@ function App() {
       <div className={`bigscreen theme-dendy scene-${city.scene}`}>
         <CityBackdrop cityId={city.id} />
         <Podium results={results} logoUrl={logoUrl} city={city} />
+        {audioHint}
       </div>
     );
   }
@@ -116,6 +137,7 @@ function App() {
           {logoUrl && <img src={logoUrl} alt="Event" className="race-logo" />}
         </div>
         <RaceTrack players={room.players} maxPlayers={room.maxPlayers} city={city} />
+        {audioHint}
       </div>
     );
   }
@@ -123,6 +145,7 @@ function App() {
   return (
     <div className={`bigscreen theme-dendy lobby-screen lobby-dendy scene-${city.scene}`}>
       <CityBackdrop cityId={city.id} />
+      {audioHint}
       {logoUrl && <img src={logoUrl} alt="Event" className="lobby-logo" />}
       <h1 className="lobby-title">{BRAND.emoji} {BRAND.name}</h1>
       <p className="lobby-subtitle">{city.name}</p>

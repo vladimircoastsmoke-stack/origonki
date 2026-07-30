@@ -74,6 +74,9 @@ case "$CMD" in
   deploy)
     node "$ROOT/scripts/deploy-render.mjs"
     ;;
+  autodeploy)
+    node "$ROOT/scripts/autodeploy.mjs"
+    ;;
   prod)
     free_port
     echo ""
@@ -92,7 +95,8 @@ case "$CMD" in
     echo "  iphone  — тест на iPhone (HTTPS + микрофон)"
     echo "  wifi    — тест в локальной Wi-Fi (Android)"
     echo "  dev     — локальная разработка"
-    echo "  deploy  — деплой на Render (постоянный URL)"
+    echo "  deploy      — первый деплой на Render (Blueprint)"
+    echo "  autodeploy  — авто-деплой: сборка + push → Render пересобирает"
     echo "  prod    — локальный production"
     echo ""
     ;;

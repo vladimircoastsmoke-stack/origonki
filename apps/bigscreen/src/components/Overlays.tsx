@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CARS, type Player, type CityOption } from '@decibel-racing/shared';
 import { CarSprite } from './CarSprite';
+import { Fireworks } from './Fireworks';
 
 interface CountdownProps {
   value: number | undefined;
@@ -40,6 +41,7 @@ export function Podium({ results, logoUrl, city }: PodiumProps) {
 
   return (
     <div className={`podium-screen podium-dendy podium-${city.scene}`}>
+      <Fireworks />
       {logoUrl && <img src={logoUrl} alt="Event" className="podium-logo" />}
       <h1 className="podium-title">🏆 Финиш!</h1>
       <div className="podium">

@@ -73,8 +73,11 @@ echo ""
 echo "✅ Готово! Код на GitHub."
 echo "   https://github.com/vladimircoastsmoke-stack/origonki"
 echo ""
-echo "👉 Следующий шаг:"
-echo "   bash ~/Desktop/Гонки/2-ДЕПЛОЙ-НА-RENDER.command"
+echo "☁️  Render пересоберёт сайт автоматически за 3–5 мин"
+echo "   https://decibel-racing.onrender.com/admin/"
+echo ""
+echo "👉 Первый раз? bash 2-ДЕПЛОЙ-НА-RENDER.command"
+echo "👉 Обновления:    bash 7-АВТО-ДЕПЛОЙ.command"
 echo ""
 
 open "https://github.com/vladimircoastsmoke-stack/origonki" 2>/dev/null || true

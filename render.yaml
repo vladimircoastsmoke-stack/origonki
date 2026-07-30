@@ -3,6 +3,8 @@ services:
     name: decibel-racing
     runtime: docker
     plan: free
+    branch: main
+    autoDeploy: true
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

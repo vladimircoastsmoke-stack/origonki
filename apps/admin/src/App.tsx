@@ -12,6 +12,7 @@ import {
   type MaxPlayers,
 } from '@decibel-racing/shared';
 import { getSocket, getJoinUrl, getServerUrl, resolveBigScreenUrl } from './lib/socket';
+import { useAdminAudio } from './hooks/useAdminAudio';
 import './App.css';
 
 type Step = 'create' | 'lobby';
@@ -25,8 +26,22 @@ function App() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [results, setResults] = useState<(Player & { place: number })[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [locationTouched, setLocationTouched] = useState(false);
 
   const socket = getSocket();
+  const { needsUnlock, unlock } = useAdminAudio(
+    step,
+    selectedCity,
+    room?.city,
+    room?.status,
+    locationTouched,
+  );
+
+  const audioHint = needsUnlock ? (
+    <button type="button" className="audio-unlock-hint" onClick={() => void unlock()}>
+      🔊 Нажмите для музыки
+    </button>
+  ) : null;
 
   useEffect(() => {
     socket.on(SOCKET_EVENTS.SERVER_ROOM_UPDATE, (updatedRoom: Room) => {
@@ -125,6 +140,7 @@ function App() {
   if (step === 'create') {
     return (
       <div className="admin">
+        {audioHint}
         <header className="admin-header">
           <div className="brand-logo">{BRAND.emoji}</div>
           <h1>{BRAND.name}</h1>
@@ -156,7 +172,10 @@ function App() {
               <div
                 key={city.id}
                 className={`card card-dendy ${selectedCity === city.id ? 'selected' : ''}`}
-                onClick={() => setSelectedCity(city.id)}
+                onClick={() => {
+                  setSelectedCity(city.id);
+                  setLocationTouched(true);
+                }}
               >
                 <div className={`card-preview admin-scene-preview pixel-scene-${city.scene}`} />
                 <strong>{city.name}</strong>
@@ -194,6 +213,7 @@ function App() {
 
   return (
     <div className="admin">
+      {audioHint}
       <header className="admin-header admin-header-compact">
         <div className="admin-header-row">
           <h1>{BRAND.emoji} {BRAND.name}</h1>

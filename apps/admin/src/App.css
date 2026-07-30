@@ -437,3 +437,23 @@
 .status-countdown { background: rgba(255, 184, 48, 0.15); color: var(--warning); border-color: var(--warning); }
 .status-racing { background: rgba(107, 203, 119, 0.15); color: var(--success); border-color: var(--success); }
 .status-finished { background: rgba(232, 69, 60, 0.15); color: var(--danger); border-color: var(--danger); }
+
+.audio-unlock-hint {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 0 var(--border);
+  cursor: pointer;
+}
+
+.audio-unlock-hint:hover {
+  filter: brightness(1.08);
+}
