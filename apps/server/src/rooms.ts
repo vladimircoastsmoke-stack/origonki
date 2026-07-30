@@ -11,7 +11,10 @@ interface PlayerRuntime extends Player {
   smoothedVolume: number;
   clientType?: 'admin' | 'player' | 'bigscreen';
   persistedId?: string;
+  isDemoBot?: boolean;
 }
+
+export const DEMO_BOT_ID_PREFIX = 'demo-bot:';
 
 interface RoomRuntime extends Omit<Room, 'players'> {
   players: PlayerRuntime[];
@@ -80,6 +83,7 @@ export function serializeRoom(room: RoomRuntime): Room {
       progress: p.progress,
       currentVolume: p.currentVolume,
       finishedAt: p.finishedAt,
+      isDemoBot: p.isDemoBot,
     })),
     createdAt: room.createdAt,
   };
@@ -117,6 +121,52 @@ export function addPlayer(
 
   room.players.push(player);
   return { player, persistedId: pid };
+}
+
+export function addDemoBot(roomId: string): Player {
+  const room = rooms.get(roomId);
+  if (!room) throw new Error('Комната не найдена');
+  if (room.status !== 'lobby') throw new Error('Тест-бот только в лобби');
+
+  const botId = `${DEMO_BOT_ID_PREFIX}${roomId}`;
+  const existing = room.players.find((p) => p.id === botId);
+  if (existing) return existing;
+
+  if (room.players.length >= room.maxPlayers) {
+    throw new Error('Комната заполнена — увеличьте лимит игроков');
+  }
+
+  const freeCar =
+    room.availableCars.find((carId) => !room.players.some((p) => p.carId === carId)) ??
+    room.availableCars[0];
+  if (!freeCar) throw new Error('Нет доступных машин');
+
+  const player: PlayerRuntime = {
+    id: botId,
+    nickname: 'Тест-бот',
+    carId: freeCar,
+    progress: 0,
+    currentVolume: 0,
+    smoothedVolume: 0,
+    persistedId: `demo-${roomId}`,
+    isDemoBot: true,
+  };
+
+  room.players.push(player);
+  return player;
+}
+
+function tickDemoBots(room: RoomRuntime): void {
+  if (room.status !== 'racing') return;
+  const t = Date.now() / 1000;
+  for (const player of room.players) {
+    if (!player.isDemoBot) continue;
+    const seed = player.id.charCodeAt(player.id.length - 1);
+    player.currentVolume = Math.max(
+      0,
+      Math.min(1, 0.55 + 0.35 * Math.sin(t * 2.2 + seed)),
+    );
+  }
 }
 
 export function rejoinPlayer(
@@ -253,6 +303,8 @@ function stopGameLoop(room: RoomRuntime): void {
 
 function tickRoom(room: RoomRuntime): void {
   if (room.status !== 'racing') return;
+
+  tickDemoBots(room);
 
   let finishedCount = 0;
 

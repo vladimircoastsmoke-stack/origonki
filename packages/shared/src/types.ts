@@ -27,6 +27,7 @@ export interface Player {
   progress: number;
   currentVolume: number;
   finishedAt?: number;
+  isDemoBot?: boolean;
 }
 
 export interface Room {

@@ -18,7 +18,7 @@
 
 .admin-header h1 {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.75rem;
   color: var(--accent);
   text-shadow: 3px 3px 0 var(--border), 0 0 30px var(--accent-glow);
   margin-bottom: 0.75rem;
@@ -28,7 +28,7 @@
 
 .admin-header p {
   color: var(--text-secondary);
-  font-size: 0.55rem;
+  font-size: 1rem;
   line-height: 1.8;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .admin-header-row h1 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   margin: 0;
 }
 
@@ -69,7 +69,7 @@
 
 .section-title {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 1.1rem;
   color: var(--accent-secondary);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
@@ -111,14 +111,14 @@
 }
 
 .card strong {
-  font-size: 0.5rem;
+  font-size: 0.8rem;
   line-height: 1.6;
   font-weight: 400;
 }
 
 .card-desc {
   color: var(--text-secondary);
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   margin-top: 0.5rem;
   line-height: 1.7;
 }
@@ -130,7 +130,7 @@
   background: #5c94fc;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 1.1rem;
   padding: 0.15rem 0.4rem;
   letter-spacing: 1px;
 }
@@ -216,7 +216,7 @@
 .card-car-showcase strong {
   display: block;
   margin-top: 0.5rem;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   line-height: 1.6;
 }
 
@@ -227,7 +227,7 @@
 .card-action {
   display: block;
   margin-top: 0.75rem;
-  font-size: 0.4rem;
+  font-size: 0.65rem;
   color: var(--accent-secondary);
   font-weight: 400;
   line-height: 1.6;
@@ -294,7 +294,7 @@
   gap: 0.5rem;
   padding: 0.9rem 1.2rem;
   border-radius: var(--radius);
-  font-size: 0.55rem;
+  font-size: 1rem;
   font-weight: 400;
   transition: transform 0.15s, box-shadow 0.15s;
   text-transform: uppercase;
@@ -305,7 +305,7 @@
 
 .btn-sm {
   padding: 0.5rem 0.8rem;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
 }
 
 .btn-primary {
@@ -373,12 +373,12 @@
 .radio-num {
   display: block;
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: var(--accent);
 }
 
 .radio-label {
-  font-size: 0.4rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0;
@@ -401,7 +401,7 @@
 
 .room-code {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 2rem;
   letter-spacing: 4px;
   color: var(--accent-secondary);
   text-shadow: 2px 2px 0 var(--border);
@@ -418,12 +418,12 @@
 
 .hint {
   color: var(--text-secondary);
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   line-height: 1.8;
 }
 
 .hint-sm {
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   line-height: 1.8;
 }
 
@@ -453,7 +453,7 @@
 
 .lobby-item-name {
   font-weight: 400;
-  font-size: 0.55rem;
+  font-size: 1rem;
   line-height: 1.6;
 }
 
@@ -463,13 +463,13 @@
 
 .lobby-item-ready {
   color: var(--success);
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   font-weight: 400;
 }
 
 .lobby-item-waiting {
   color: var(--warning);
-  font-size: 0.45rem;
+  font-size: 0.7rem;
 }
 
 .dropzone {
@@ -509,13 +509,13 @@
   color: var(--accent-secondary);
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   letter-spacing: 0;
   line-height: 1.6;
 }
 
 .results-table td {
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   line-height: 1.6;
 }
 
@@ -527,7 +527,7 @@
   display: inline-block;
   padding: 0.35rem 0.6rem;
   border-radius: var(--radius);
-  font-size: 0.4rem;
+  font-size: 0.65rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0;
@@ -546,7 +546,7 @@
   right: 1rem;
   z-index: 100;
   font-family: var(--font-display);
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   padding: 0.6rem 0.9rem;
   background: var(--accent);
   color: #fff;
@@ -566,7 +566,7 @@
   gap: 1rem;
   justify-content: center;
   margin-top: 1rem;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: var(--text-secondary);
 }
 
@@ -580,7 +580,7 @@
   color: var(--text-secondary);
   border: 2px solid var(--border);
   margin-bottom: 1rem;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
 }
 
 .btn-back:hover {
@@ -595,6 +595,51 @@
 
 .section-nav {
   padding-top: 0;
+}
+
+.section-test {
+  border-color: var(--accent);
+  background: rgba(255, 107, 44, 0.08);
+}
+
+.section-test .section-title {
+  color: var(--accent);
+}
+
+.test-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.test-steps li {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.test-steps li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent-secondary);
+}
+
+.test-bot-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.6rem;
+  background: rgba(255, 217, 61, 0.2);
+  color: var(--accent-secondary);
+  border: 2px solid var(--accent-secondary);
+  border-radius: var(--radius);
+  vertical-align: middle;
 }
 
 .lobby-meta {
@@ -614,7 +659,7 @@
 
 .game-intro-badge {
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.55rem;
+  font-size: 1rem;
   color: var(--accent-secondary);
   margin-bottom: 1rem;
   letter-spacing: 2px;
@@ -622,14 +667,14 @@
 
 .game-intro-headline {
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.65rem;
+  font-size: 0.95rem;
   color: var(--accent);
   line-height: 1.8;
   margin-bottom: 1rem;
 }
 
 .game-intro-essence {
-  font-size: 0.5rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
   margin-bottom: 1rem;
   line-height: 1.8;
@@ -648,14 +693,14 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
   line-height: 1.7;
 }
 
 .game-intro-step-num {
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.5rem;
+  font-size: 0.8rem;
   color: var(--accent);
   flex-shrink: 0;
   margin-top: 0.2rem;
@@ -663,7 +708,7 @@
 
 .game-intro-player {
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.55rem;
+  font-size: 1rem;
   color: var(--accent-secondary);
   line-height: 1.8;
   margin-top: 0.25rem;

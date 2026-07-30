@@ -10,6 +10,7 @@ export const SOCKET_EVENTS = {
   ADMIN_NEW_GAME: 'admin:newGame',
   ADMIN_SET_MAX_PLAYERS: 'admin:setMaxPlayers',
   ADMIN_CLOSE_ROOM: 'admin:closeRoom',
+  ADMIN_ADD_DEMO_BOT: 'admin:addDemoBot',
 
   // Player
   PLAYER_JOIN: 'player:join',

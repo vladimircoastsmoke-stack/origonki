@@ -113,6 +113,52 @@ function App() {
     };
   }, [socket, room?.id, step]);
 
+  const addDemoBot = useCallback(() => {
+    if (!room) return;
+    setError(null);
+    socket.emit(
+      SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT,
+      { roomId: room.id },
+      (response: { room?: Room; error?: string }) => {
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
+        if (response.room) setRoom(response.room);
+      },
+    );
+  }, [socket, room]);
+
+  const createRoomAndTest = useCallback(() => {
+    socket.emit(
+      SOCKET_EVENTS.ADMIN_CREATE_ROOM,
+      { maxPlayers, city: selectedCity },
+      (response: { roomId?: string; room?: Room; error?: string }) => {
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
+        if (!response.room) return;
+        const created = response.room;
+        setRoom(created);
+        setStep('lobby');
+        setLobbyEdit(null);
+        socket.emit(
+          SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT,
+          { roomId: created.id },
+          (botResponse: { room?: Room; error?: string }) => {
+            if (botResponse.error) {
+              setError(botResponse.error);
+              return;
+            }
+            if (botResponse.room) setRoom(botResponse.room);
+            window.open(resolveBigScreenUrl(created.id), '_blank', 'noopener,noreferrer');
+          },
+        );
+      },
+    );
+  }, [socket, maxPlayers, selectedCity]);
+
   const createRoom = useCallback(() => {
     socket.emit(
       SOCKET_EVENTS.ADMIN_CREATE_ROOM,
@@ -334,7 +380,13 @@ function App() {
           <button type="button" className="btn btn-primary" onClick={createRoom}>
             Создать комнату
           </button>
+          <button type="button" className="btn btn-secondary" onClick={createRoomAndTest}>
+            Создать и протестировать
+          </button>
         </div>
+        <p className="hint hint-sm section-hint">
+          «Протестировать» создаст комнату, добавит тест-бота и откроет Big Screen — можно показать гонку в одиночку
+        </p>
       </div>
     );
   }
@@ -350,7 +402,7 @@ function App() {
         </header>
         {error && <div className="section section-error">{error}</div>}
         <section className="section">
-          <BackButton label="Назад в лobby" onClick={() => setLobbyEdit(null)} />
+          <BackButton label="Назад в лобби" onClick={() => setLobbyEdit(null)} />
           <h2 className="section-title">Выберите трассу</h2>
           {cityPicker(applyCityInLobby, selectedCity)}
           <p className="hint hint-sm section-hint">При смене локации игрокам нужно заново выбрать машину</p>
@@ -369,13 +421,16 @@ function App() {
         </header>
         {error && <div className="section section-error">{error}</div>}
         <section className="section">
-          <BackButton label="Назад в лobby" onClick={() => setLobbyEdit(null)} />
+          <BackButton label="Назад в лобби" onClick={() => setLobbyEdit(null)} />
           <h2 className="section-title">Количество игроков</h2>
           {playersPicker(applyPlayersInLobby, maxPlayers)}
         </section>
       </div>
     );
   }
+
+  const hasDemoBot = room?.players.some((p) => p.isDemoBot) ?? false;
+  const joinUrl = room ? getJoinUrl(room.id) : '';
 
   return (
     <div className="admin">
@@ -405,6 +460,44 @@ function App() {
             </button>
             <button type="button" className="btn btn-back" onClick={() => setLobbyEdit('players')}>
               ← Сменить игроков
+            </button>
+          </div>
+        </section>
+      )}
+
+      {canEditLobby && (
+        <section className="section section-test">
+          <h2 className="section-title">Режим теста</h2>
+          <ol className="test-steps">
+            <li>Откройте Big Screen на проекторе или втором экране</li>
+            <li>Добавьте тест-бота или зайдите с телефона по QR</li>
+            <li>На телефоне: ник, машина, разрешите микрофон</li>
+            <li>Нажмите «Старт» и кричите — бот имитирует соперника</li>
+          </ol>
+          <div className="btn-group">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => room && window.open(resolveBigScreenUrl(room.id), '_blank', 'noopener,noreferrer')}
+              disabled={!room}
+            >
+              Открыть Big Screen
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => joinUrl && window.open(joinUrl, '_blank', 'noopener,noreferrer')}
+              disabled={!joinUrl}
+            >
+              Открыть игрока
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={addDemoBot}
+              disabled={!room || hasDemoBot || (room?.players.length ?? 0) >= (room?.maxPlayers ?? 10)}
+            >
+              {hasDemoBot ? 'Тест-бот уже в лобби' : 'Добавить тест-бота'}
             </button>
           </div>
         </section>
@@ -465,7 +558,10 @@ function App() {
             const car = getCarById(player.carId);
             return (
               <li key={player.id} className="lobby-item">
-                <span className="lobby-item-name">{player.nickname}</span>
+                <span className="lobby-item-name">
+                  {player.nickname}
+                  {player.isDemoBot && <span className="test-bot-badge">бот</span>}
+                </span>
                 <span className="lobby-item-car">
                   {car ? (
                     <>

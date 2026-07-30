@@ -32,6 +32,7 @@ import {
   getRaceResultsForRoom,
   getActiveRooms,
   consumeRaceFinished,
+  addDemoBot,
 } from './rooms.js';
 import { setupStaticFrontend } from './static.js';
 
@@ -227,6 +228,19 @@ io.on('connection', (socket) => {
   socket.on(SOCKET_EVENTS.ADMIN_NEW_GAME, (data: { roomId: string }, cb) => {
     try {
       newGame(data.roomId);
+      broadcastRoomUpdate(data.roomId);
+      const room = getRoom(data.roomId);
+      cb?.({ room: room ? serializeRoom(room) : undefined });
+    } catch (err) {
+      const message = (err as Error).message;
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message });
+      cb?.({ error: message });
+    }
+  });
+
+  socket.on(SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT, (data: { roomId: string }, cb) => {
+    try {
+      addDemoBot(data.roomId);
       broadcastRoomUpdate(data.roomId);
       const room = getRoom(data.roomId);
       cb?.({ room: room ? serializeRoom(room) : undefined });
