@@ -64,7 +64,7 @@ export function useGameAudio(
     if (countdown === undefined) return;
     if (prevCountdown.current === countdown) return;
     prevCountdown.current = countdown;
-    chiptune.playBeep(countdown === 0, cityId);
+    chiptune.playCountdownTick(countdown, cityId);
   }, [countdown, roomStatus, cityId, needsUnlock]);
 
   return { needsUnlock, unlock };

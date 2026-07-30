@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/hooks/usemicrophone.ts","./src/lib/socket.ts","./src/pages/joinpage.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/carsprite.tsx","./src/components/gameintro.tsx","./src/components/shouthero.tsx","./src/hooks/usemicrophone.ts","./src/hooks/useplayeraudio.ts","./src/lib/socket.ts","./src/pages/joinpage.tsx"],"version":"5.9.3"}

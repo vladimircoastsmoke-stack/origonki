@@ -5,3 +5,5 @@ export * from './game.js';
 export * from './client.js';
 export * from './audio/tracks.js';
 export * from './audio/chiptuneEngine.js';
+export * from './sprites/carSpriteData.js';
+export * from './art/shoutIllustration.js';

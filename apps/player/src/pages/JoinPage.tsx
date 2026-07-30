@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   SOCKET_EVENTS,
-  CARS,
   BRAND,
   getCityById,
+  getCarById,
   type Room,
   type Player,
 } from '@decibel-racing/shared';
@@ -16,6 +16,10 @@ import {
   savePlayerSession,
   loadPlayerSession,
 } from '../hooks/useMicrophone';
+import { GameIntroBox } from '../components/GameIntro';
+import { ShoutHero } from '../components/ShoutHero';
+import { CarSpriteMini } from '../components/CarSprite';
+import { usePlayerAudio, useCountdownBeep } from '../hooks/usePlayerAudio';
 
 type Screen = 'nickname' | 'car' | 'waiting' | 'racing' | 'results' | 'mic-error';
 
@@ -58,6 +62,8 @@ export default function JoinPage() {
 
   const socket = getSocket();
   const { volume, isActive, error: micError, start: startMic, stop: stopMic } = useMicrophone();
+  const { audioReady } = usePlayerAudio();
+  useCountdownBeep(socket, room?.city, audioReady);
 
   const city = room ? getCityById(room.city) : null;
 
@@ -227,7 +233,9 @@ export default function JoinPage() {
     });
   };
 
-  const availableCars = CARS.filter((c) => room?.availableCars.includes(c.id));
+  const availableCars = (room?.availableCars ?? [])
+    .map((id) => getCarById(id))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c));
   const takenCars = new Set(room?.players.filter((p) => p.carId && p.id !== socket.id).map((p) => p.carId));
 
   if (screen === 'nickname') {
@@ -237,6 +245,7 @@ export default function JoinPage() {
         <div className="brand-mark">{BRAND.emoji}</div>
         <h1 className="player-title">{BRAND.name}</h1>
         <p className="player-subtitle">Комната: {roomId}</p>
+        <GameIntroBox variant="player" />
         <input
           className="player-input"
           placeholder="Ваш никнейм"
@@ -262,6 +271,7 @@ export default function JoinPage() {
     return (
       <div className="player-screen">
         <ConnectionBadge connected={connected} />
+        <ShoutHero className="player-hero-compact" />
         <h1 className="player-title">Выберите машину</h1>
         {error && <p className="player-error">{error}</p>}
         <div className="car-grid">
@@ -274,7 +284,7 @@ export default function JoinPage() {
                 onClick={() => !taken && selectCar(car.id)}
                 disabled={taken}
               >
-                <span className="car-emoji">{car.emoji}</span>
+                <CarSpriteMini carId={car.id} />
                 <span className="car-name">{car.name}</span>
                 {taken && <span className="car-taken-label">Занята</span>}
               </button>
@@ -289,15 +299,21 @@ export default function JoinPage() {
     return (
       <div className="player-screen waiting">
         <ConnectionBadge connected={connected} />
+        <ShoutHero className="player-hero-compact" />
         <div className="pulse-icon">🏎️</div>
         <h1>Ждём старта...</h1>
         <RoomStatusHint room={room} />
         <p className="player-subtitle">
           {room?.players.length ?? 0}/{room?.maxPlayers} игроков
         </p>
-        {selectedCar && (
-          <p>{CARS.find((c) => c.id === selectedCar)?.emoji} {CARS.find((c) => c.id === selectedCar)?.name}</p>
-        )}
+        {selectedCar && (() => {
+          const car = getCarById(selectedCar);
+          return car ? (
+            <p className="waiting-car">
+              <CarSpriteMini carId={car.id} /> {car.name}
+            </p>
+          ) : null;
+        })()}
         {!window.isSecureContext && (
           <p className="player-error" style={{ marginTop: '1rem' }}>
             ⚠️ Микрофон на iPhone работает только по HTTPS.<br />
@@ -429,6 +445,7 @@ export default function JoinPage() {
   if (screen === 'results') {
     return (
       <div className="player-screen results">
+        <ShoutHero className="player-hero-compact" />
         <div className="result-place">#{myPlace}</div>
         <h1>{myPlace === 1 ? '🏆 Победа!' : myPlace === 2 ? '🥈' : myPlace === 3 ? '🥉' : 'Финиш!'}</h1>
         <p className="player-subtitle">Вы заняли {myPlace} место</p>

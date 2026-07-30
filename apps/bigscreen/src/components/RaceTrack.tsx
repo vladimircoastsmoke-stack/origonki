@@ -22,50 +22,59 @@ export function RaceTrack({ players, maxPlayers, city }: RaceTrackProps) {
         {
           '--track-accent': p.accent,
           '--track-road': p.road,
+          '--track-ground': p.ground,
         } as CSSProperties
       }
     >
-      <div className="track-road-texture" />
-      <div className="track-finish-line" />
-      <div className="track-start-line" />
+      <div className="track-road-bed">
+        <div className="track-curb track-curb-top" aria-hidden />
+        <div className="track-lanes">
+          {Array.from({ length: lanes }).map((_, laneIndex) => {
+            const lanePlayer = players[laneIndex];
+            const isLast = laneIndex === lanes - 1;
 
-      {Array.from({ length: lanes }).map((_, laneIndex) => {
-        const lanePlayer = players[laneIndex];
-
-        return (
-          <div key={laneIndex} className="track-lane">
-            <div className="lane-markers">
-              {[25, 50, 75].map((mark) => (
-                <div key={mark} className="lane-marker" style={{ left: `${mark}%` }} />
-              ))}
-            </div>
-
-            {lanePlayer && (
-              <>
-                <motion.div
-                  className="car-container"
-                  animate={{ left: `${Math.min(lanePlayer.progress, 100)}%` }}
-                  transition={{ type: 'tween', duration: 0.12, ease: 'linear' }}
-                >
-                  <div className="car-name">{lanePlayer.nickname}</div>
-                  <CarSprite
-                    carId={lanePlayer.carId}
-                    scale={maxPlayers > 6 ? 2.2 : maxPlayers > 4 ? 2.6 : 3}
-                    revving={lanePlayer.currentVolume > 0.08}
-                  />
-                </motion.div>
-
-                <div className="volume-bar-container">
-                  <div
-                    className="volume-bar"
-                    style={{ width: `${lanePlayer.currentVolume * 100}%` }}
-                  />
+            return (
+              <div key={laneIndex} className={`track-lane ${isLast ? 'track-lane-last' : ''}`}>
+                <div className="lane-markers" aria-hidden>
+                  {[20, 40, 60, 80].map((mark) => (
+                    <div key={mark} className="lane-marker" style={{ left: `${mark}%` }} />
+                  ))}
                 </div>
-              </>
-            )}
-          </div>
-        );
-      })}
+
+                {lanePlayer && (
+                  <>
+                    <motion.div
+                      className="car-container"
+                      animate={{ left: `${Math.min(lanePlayer.progress, 100)}%` }}
+                      transition={{ type: 'tween', duration: 0.12, ease: 'linear' }}
+                    >
+                      <div className="car-name">{lanePlayer.nickname}</div>
+                      <CarSprite
+                        carId={lanePlayer.carId}
+                        scale={maxPlayers > 6 ? 2.2 : maxPlayers > 4 ? 2.6 : 3}
+                        revving={lanePlayer.currentVolume > 0.08}
+                      />
+                    </motion.div>
+
+                    <div className="volume-bar-container">
+                      <div
+                        className="volume-bar"
+                        style={{ width: `${lanePlayer.currentVolume * 100}%` }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="track-curb track-curb-bottom" aria-hidden />
+        <div className="track-road-texture" aria-hidden />
+        <div className="track-edge track-edge-left" aria-hidden />
+        <div className="track-edge track-edge-right" aria-hidden />
+        <div className="track-finish-line" aria-hidden />
+        <div className="track-start-line" aria-hidden />
+      </div>
     </div>
   );
 }

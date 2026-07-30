@@ -3,11 +3,11 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   SOCKET_EVENTS,
   CITIES,
-  CARS,
-  DEFAULT_AVAILABLE_CARS,
   MAX_PLAYER_OPTIONS,
   BRAND,
   getCityById,
+  getCarsByCity,
+  getCarById,
   asCitySceneId,
   type Room,
   type Player,
@@ -16,10 +16,13 @@ import {
 } from '@decibel-racing/shared';
 import { getSocket, getJoinUrl, getServerUrl, resolveBigScreenUrl } from './lib/socket';
 import { useAdminAudio } from './hooks/useAdminAudio';
+import { useCountdownBeep } from './hooks/useCountdownBeep';
+import { GameIntroBox } from './components/GameIntro';
+import { CarSpriteMini } from './components/CarSprite';
 import './App.css';
 
 type Step = 'create' | 'lobby';
-type SetupStep = 'players' | 'location' | 'cars';
+type SetupStep = 'location' | 'setup';
 type LobbyEdit = null | 'location' | 'players';
 
 function BackButton({ label, onClick }: { label: string; onClick: () => void }) {
@@ -32,18 +35,19 @@ function BackButton({ label, onClick }: { label: string; onClick: () => void }) 
 
 function App() {
   const [step, setStep] = useState<Step>('create');
-  const [setupStep, setSetupStep] = useState<SetupStep>('players');
+  const [setupStep, setSetupStep] = useState<SetupStep>('location');
   const [lobbyEdit, setLobbyEdit] = useState<LobbyEdit>(null);
   const [room, setRoom] = useState<Room | null>(null);
   const [maxPlayers, setMaxPlayers] = useState<MaxPlayers>(4);
   const [selectedCity, setSelectedCity] = useState<CitySceneId>(CITIES[0].id);
-  const [selectedCars, setSelectedCars] = useState<string[]>([...DEFAULT_AVAILABLE_CARS]);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [results, setResults] = useState<(Player & { place: number })[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [locationTouched, setLocationTouched] = useState(false);
 
   const socket = getSocket();
+  const cityCars = getCarsByCity(selectedCity);
+
   const { needsUnlock, unlock } = useAdminAudio(
     step,
     selectedCity,
@@ -51,6 +55,8 @@ function App() {
     room?.status,
     locationTouched,
   );
+
+  useCountdownBeep(socket, room?.city ?? selectedCity, !needsUnlock);
 
   const audioHint = needsUnlock ? (
     <button type="button" className="audio-unlock-hint" onClick={() => void unlock()}>
@@ -93,16 +99,12 @@ function App() {
         }
         if (response.room) {
           setRoom(response.room);
-          socket.emit(SOCKET_EVENTS.ADMIN_SET_CARS, {
-            roomId: response.room.id,
-            carIds: selectedCars,
-          });
           setStep('lobby');
           setLobbyEdit(null);
         }
       },
     );
-  }, [socket, maxPlayers, selectedCity, selectedCars]);
+  }, [socket, maxPlayers, selectedCity]);
 
   const handleLogoUpload = async (file: File) => {
     if (!room) return;
@@ -120,16 +122,6 @@ function App() {
     } catch {
       setError('Ошибка загрузки логотипа');
     }
-  };
-
-  const toggleCar = (carId: string) => {
-    setSelectedCars((prev) =>
-      prev.includes(carId)
-        ? prev.length > 2
-          ? prev.filter((c) => c !== carId)
-          : prev
-        : [...prev, carId],
-    );
   };
 
   const applyCityInLobby = (cityId: CitySceneId) => {
@@ -197,99 +189,103 @@ function App() {
     </div>
   );
 
-  const cityPicker = (onSelect: (id: CitySceneId) => void, selected: CitySceneId) => (
+  const cityPicker = (
+    onSelect: (id: CitySceneId) => void,
+    selected: CitySceneId,
+    pickMode: 'navigate' | 'select' = 'select',
+  ) => (
     <div className="card-grid">
       {CITIES.map((city) => (
         <div
           key={city.id}
           className={`card card-dendy ${selected === city.id ? 'selected' : ''}`}
           onClick={() => onSelect(city.id)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onSelect(city.id)}
         >
           <div className={`card-preview admin-scene-preview pixel-scene-${city.scene}`} />
           <strong>{city.name}</strong>
           <p className="card-desc">{city.description}</p>
           <span className="card-badge">8-BIT</span>
+          {pickMode === 'navigate' && <span className="card-action">Выбрать →</span>}
+        </div>
+      ))}
+    </div>
+  );
+
+  const cityCarGrid = (cityId: CitySceneId) => (
+    <div className="card-grid card-grid-cars card-grid-cars-readonly">
+      {getCarsByCity(cityId).map((car) => (
+        <div key={car.id} className="card card-car card-car-showcase">
+          <CarSpriteMini carId={car.id} />
+          <strong>{car.name}</strong>
         </div>
       ))}
     </div>
   );
 
   if (step === 'create') {
+    if (setupStep === 'location') {
+      return (
+        <div className="admin">
+          {audioHint}
+          <header className="admin-header">
+            <div className="brand-logo">{BRAND.emoji}</div>
+            <h1>{BRAND.name}</h1>
+            <p>{BRAND.tagline} · Панель ведущего</p>
+          </header>
+
+          <GameIntroBox variant="compact" />
+
+          {error && <div className="section section-error">{error}</div>}
+
+          <section className="section">
+            <h2 className="section-title">Выберите локацию</h2>
+            {cityPicker((id) => {
+              setSelectedCity(id);
+              setLocationTouched(true);
+              setSetupStep('setup');
+            }, selectedCity, 'navigate')}
+          </section>
+        </div>
+      );
+    }
+
+    const city = getCityById(selectedCity);
     return (
       <div className="admin">
         {audioHint}
-        <header className="admin-header">
-          <div className="brand-logo">{BRAND.emoji}</div>
-          <h1>{BRAND.name}</h1>
-          <p>{BRAND.tagline} · Панель ведущего</p>
-          <div className="setup-steps">
-            <span className={setupStep === 'players' ? 'active' : ''}>1. Игроки</span>
-            <span className={setupStep === 'location' ? 'active' : ''}>2. Локация</span>
-            <span className={setupStep === 'cars' ? 'active' : ''}>3. Машины</span>
-          </div>
+        <header className="admin-header admin-header-compact">
+          <BackButton
+            label="К выбору локации"
+            onClick={() => {
+              setSetupStep('location');
+              setLocationTouched(false);
+            }}
+          />
+          <h1>{city.name}</h1>
+          <p className="hint">{city.description}</p>
         </header>
 
         {error && <div className="section section-error">{error}</div>}
 
-        {setupStep === 'players' && (
-          <section className="section">
-            <h2 className="section-title">Количество игроков</h2>
-            {playersPicker((n) => setMaxPlayers(n), maxPlayers)}
-            <div className="btn-group">
-              <button type="button" className="btn btn-primary" onClick={() => setSetupStep('location')}>
-                Далее →
-              </button>
-            </div>
-          </section>
-        )}
+        <section className="section">
+          <h2 className="section-title">Количество игроков</h2>
+          {playersPicker((n) => setMaxPlayers(n), maxPlayers)}
+        </section>
 
-        {setupStep === 'location' && (
-          <section className="section">
-            <BackButton
-              label="К числу игроков"
-              onClick={() => {
-                setSetupStep('players');
-                setLocationTouched(false);
-              }}
-            />
-            <h2 className="section-title">Выберите трассу</h2>
-            {cityPicker((id) => {
-              setSelectedCity(id);
-              setLocationTouched(true);
-            }, selectedCity)}
-            <div className="btn-group">
-              <button type="button" className="btn btn-primary" onClick={() => setSetupStep('cars')}>
-                Далее →
-              </button>
-            </div>
-          </section>
-        )}
+        <section className="section">
+          <h2 className="section-title">Машины трассы ({cityCars.length})</h2>
+          <p className="hint hint-sm section-hint">Игроки выберут одну из этих машин на телефоне</p>
+          {cityCarGrid(selectedCity)}
+        </section>
 
-        {setupStep === 'cars' && (
-          <>
-            <section className="section">
-              <BackButton label="К выбору локации" onClick={() => setSetupStep('location')} />
-              <h2 className="section-title">Доступные машины ({selectedCars.length})</h2>
-              <div className="card-grid card-grid-cars">
-                {CARS.map((car) => (
-                  <div
-                    key={car.id}
-                    className={`card card-car ${selectedCars.includes(car.id) ? 'selected' : ''}`}
-                    onClick={() => toggleCar(car.id)}
-                  >
-                    <div className="car-emoji" style={{ color: car.color }}>{car.emoji}</div>
-                    <strong>{car.name}</strong>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <div className="btn-group">
-              <button type="button" className="btn btn-primary" onClick={createRoom}>
-                Создать комнату
-              </button>
-            </div>
-          </>
-        )}
+        <div className="btn-group">
+          <button type="button" className="btn btn-primary" onClick={createRoom}>
+            Создать комнату
+          </button>
+        </div>
       </div>
     );
   }
@@ -308,6 +304,7 @@ function App() {
           <BackButton label="Назад в лobby" onClick={() => setLobbyEdit(null)} />
           <h2 className="section-title">Выберите трассу</h2>
           {cityPicker(applyCityInLobby, selectedCity)}
+          <p className="hint hint-sm section-hint">При смене локации игрокам нужно заново выбрать машину</p>
         </section>
       </div>
     );
@@ -416,12 +413,19 @@ function App() {
         </h2>
         <ul className="lobby-list">
           {room?.players.map((player) => {
-            const car = CARS.find((c) => c.id === player.carId);
+            const car = getCarById(player.carId);
             return (
               <li key={player.id} className="lobby-item">
                 <span className="lobby-item-name">{player.nickname}</span>
                 <span className="lobby-item-car">
-                  {car ? `${car.emoji} ${car.name}` : '—'}
+                  {car ? (
+                    <>
+                      <CarSpriteMini carId={car.id} />
+                      {car.name}
+                    </>
+                  ) : (
+                    '—'
+                  )}
                 </span>
                 <span className={player.carId ? 'lobby-item-ready' : 'lobby-item-waiting'}>
                   {player.carId ? '✓ Готов' : 'Выбирает машину...'}
@@ -464,12 +468,12 @@ function App() {
             </thead>
             <tbody>
               {results.map((r) => {
-                const car = CARS.find((c) => c.id === r.carId);
+                const car = getCarById(r.carId);
                 return (
                   <tr key={r.id}>
                     <td className={`place-${r.place}`}>#{r.place}</td>
                     <td>{r.nickname}</td>
-                    <td>{car ? `${car.emoji} ${car.name}` : '—'}</td>
+                    <td>{car ? car.name : '—'}</td>
                     <td>{Math.round(r.progress)}%</td>
                   </tr>
                 );

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { CARS, type Player, type CityOption } from '@decibel-racing/shared';
+import { getCarById, type Player, type CityOption } from '@decibel-racing/shared';
 import { CarSprite } from './CarSprite';
 import { Fireworks } from './Fireworks';
 
@@ -69,7 +69,7 @@ export function Podium({ results, logoUrl, city }: PodiumProps) {
       {results.length > 3 && (
         <div className="podium-rest">
           {results.slice(3).map((r) => {
-            const car = CARS.find((c) => c.id === r.carId);
+            const car = getCarById(r.carId);
             return (
               <div key={r.id}>
                 #{r.place} {r.nickname} {car ? `· ${car.name}` : ''}

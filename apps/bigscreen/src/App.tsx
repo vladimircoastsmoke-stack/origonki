@@ -14,6 +14,8 @@ import { Countdown, Podium } from './components/Overlays';
 import { PixelScene } from './components/PixelScene';
 import { CarSpriteMini } from './components/CarSprite';
 import { useGameAudio } from './hooks/useGameAudio';
+import { GameIntroBox } from './components/GameIntro';
+import { ShoutHero } from './components/ShoutHero';
 import './App.css';
 import './pixel-scenes.css';
 
@@ -94,6 +96,7 @@ function App() {
   if (error) {
     return (
       <div className="bigscreen theme-dendy error-screen">
+        <ShoutHero className="bigscreen-hero" />
         <h1>⚠️ {error}</h1>
       </div>
     );
@@ -102,6 +105,7 @@ function App() {
   if (!room) {
     return (
       <div className="bigscreen theme-dendy loading-screen">
+        <ShoutHero className="bigscreen-hero" />
         <div className="loading-spinner" />
         <p>Загрузка...</p>
       </div>
@@ -149,6 +153,8 @@ function App() {
       {logoUrl && <img src={logoUrl} alt="Event" className="lobby-logo" />}
       <h1 className="lobby-title">{BRAND.emoji} {BRAND.name}</h1>
       <p className="lobby-subtitle">{city.name}</p>
+
+      <GameIntroBox variant="compact" />
 
       <div className="lobby-qr">
         <div className="qr-wrapper">

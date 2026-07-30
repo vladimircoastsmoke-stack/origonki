@@ -89,37 +89,52 @@ class ChiptuneEngine {
     this.scheduleDef(key, def, this.ctx.currentTime + 0.05, opts, gen);
   }
 
-  playBeep(high = false, cityId?: CitySceneId) {
+  playCountdownTick(value: number, cityId?: CitySceneId) {
     if (!this.ctx || !this.master || !this.unlocked) return;
     if (!this.session) this.beginSession();
     const t = this.ctx.currentTime;
 
-    if (cityId === 'dubai') {
-      this.playTone(high ? 830.61 : 659.25, t, high ? 0.35 : 0.12, 'square', high ? 0.26 : 0.16);
-      if (high) this.playTone(987.77, t + 0.1, 0.45, 'triangle', 0.18);
-      return;
-    }
-    if (cityId === 'murmansk') {
-      this.playTone(high ? 880 : 587.33, t, high ? 0.35 : 0.12, 'square', high ? 0.26 : 0.16);
-      if (high) this.playTone(1174.66, t + 0.08, 0.4, 'square', 0.2);
-      return;
-    }
-    if (cityId === 'monaco') {
-      this.playTone(high ? 1046.5 : 523.25, t, high ? 0.32 : 0.1, 'square', high ? 0.24 : 0.15);
-      if (high) this.playTone(1318.5, t + 0.12, 0.5, 'triangle', 0.2);
-      return;
-    }
-    if (cityId === 'tokyo') {
-      this.playTone(high ? 880 : 523.25, t, high ? 0.3 : 0.1, 'square', high ? 0.22 : 0.14);
-      if (high) this.playTone(1046.5, t + 0.1, 0.45, 'triangle', 0.18);
+    if (value === 0) {
+      const goNotes = [523.25, 659.25, 783.99, 987.77, 1318.5];
+      goNotes.forEach((freq, i) => {
+        this.playTone(freq, t + i * 0.07, i === goNotes.length - 1 ? 0.55 : 0.12, 'square', 0.24);
+      });
+      this.playNoiseBlip(t + 0.05, 0.08, 0.1);
       return;
     }
 
-    this.playTone(high ? 988 : 660, t, high ? 0.35 : 0.12, 'square', high ? 0.28 : 0.18);
-    if (high) {
-      this.playTone(1318.5, t + 0.08, 0.4, 'square', 0.22);
-      this.playTone(1568, t + 0.2, 0.5, 'triangle', 0.2);
+    const tickFreq: Record<number, number> = {
+      3: cityId === 'tokyo' ? 440 : 392,
+      2: cityId === 'monaco' ? 554.37 : 493.88,
+      1: cityId === 'dubai' ? 659.25 : 587.33,
+    };
+    const freq = tickFreq[value] ?? 440;
+    this.playTone(freq, t, 0.16, 'square', 0.22);
+    this.playTone(freq * 0.5, t + 0.02, 0.12, 'triangle', 0.1);
+    this.playNoiseBlip(t, 0.06, 0.06);
+  }
+
+  playBeep(high = false, cityId?: CitySceneId) {
+    this.playCountdownTick(high ? 0 : 1, cityId);
+  }
+
+  private playNoiseBlip(start: number, duration: number, volume: number) {
+    if (!this.ctx || !this.session) return;
+    const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i += 1) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
     }
+    const src = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    src.buffer = buffer;
+    gain.gain.setValueAtTime(volume, start);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    src.connect(gain);
+    gain.connect(this.session);
+    src.start(start);
+    src.stop(start + duration + 0.02);
   }
 
   private scheduleDef(

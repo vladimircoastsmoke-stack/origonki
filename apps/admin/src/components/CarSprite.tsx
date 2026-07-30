@@ -7,7 +7,6 @@ interface CarSpriteProps {
   className?: string;
 }
 
-/** 8-bit спрайт машины — вид сбоку, едет ВПРАВО → */
 export function CarSprite({ carId, scale = 3, revving = false, className = '' }: CarSpriteProps) {
   const rects = getSpriteRects(carId);
   const rearX = getCarRearX(carId);
@@ -36,7 +35,6 @@ export function CarSprite({ carId, scale = 3, revving = false, className = '' }:
   );
 }
 
-/** Мини-превью для лобби / админки */
 export function CarSpriteMini({ carId }: { carId: string }) {
   return <CarSprite carId={carId} scale={1.5} className="car-sprite-mini" />;
 }

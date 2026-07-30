@@ -56,7 +56,7 @@ export interface CarOption {
   id: string;
   name: string;
   color: string;
-  emoji: string;
+  city: CitySceneId;
 }
 
 export interface RaceResult {

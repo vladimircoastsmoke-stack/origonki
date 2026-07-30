@@ -1,4 +1,4 @@
-import type { CityOption, CarOption, MaxPlayers } from './types.js';
+import type { CityOption, CarOption, MaxPlayers, CitySceneId } from './types.js';
 
 export const MAX_PLAYER_OPTIONS: MaxPlayers[] = [2, 4, 6, 8, 10];
 
@@ -89,16 +89,53 @@ export const CITIES: CityOption[] = [
 ];
 
 export const CARS: CarOption[] = [
-  { id: 'zhiguli', name: 'Жигули', color: '#d82800', emoji: '🚗' },
-  { id: 'volga', name: 'Волга', color: '#007800', emoji: '🚙' },
-  { id: 'uaz', name: 'УАЗик', color: '#fc9838', emoji: '🛻' },
-  { id: 'rocket', name: 'Ракета', color: '#0058f8', emoji: '🚀' },
-  { id: 'blaze', name: 'Огонь', color: '#ff4400', emoji: '🔥' },
-  { id: 'nova', name: 'Звезда', color: '#00a800', emoji: '⭐' },
-  { id: 'shadow', name: 'Тень', color: '#585858', emoji: '🦅' },
-  { id: 'turbo', name: 'Турбо', color: '#b800b8', emoji: '💨' },
-  { id: 'pixel', name: 'Пиксель', color: '#fc9838', emoji: '🕹️' },
-  { id: 'dendy', name: 'Денди', color: '#d82800', emoji: '🎮' },
+  // Мурманск — русские автомобили
+  { id: 'mur_zhiguli', name: 'Жигули', color: '#d82800', city: 'murmansk' },
+  { id: 'mur_volga', name: 'Волга', color: '#007800', city: 'murmansk' },
+  { id: 'mur_uaz', name: 'УАЗик', color: '#fc9838', city: 'murmansk' },
+  { id: 'mur_lada', name: 'Lada', color: '#0058f8', city: 'murmansk' },
+  { id: 'mur_niva', name: 'Нива', color: '#787878', city: 'murmansk' },
+  { id: 'mur_gazel', name: 'Газель', color: '#fcfcfc', city: 'murmansk' },
+  { id: 'mur_moskvich', name: 'Москвич', color: '#00a800', city: 'murmansk' },
+  { id: 'mur_pobeda', name: 'Победа', color: '#585858', city: 'murmansk' },
+  { id: 'mur_oka', name: 'Ока', color: '#fc9838', city: 'murmansk' },
+  { id: 'mur_kalina', name: 'Калина', color: '#d82800', city: 'murmansk' },
+
+  // Дубай — внедорожники и джипы
+  { id: 'dub_cruiser', name: 'Desert Cruiser', color: '#fcfcfc', city: 'dubai' },
+  { id: 'dub_gwagon', name: 'Sand G-Wagon', color: '#585858', city: 'dubai' },
+  { id: 'dub_dune', name: 'Dune Rover', color: '#fc9838', city: 'dubai' },
+  { id: 'dub_pearl', name: 'Pearl SUV', color: '#e8eef2', city: 'dubai' },
+  { id: 'dub_golden', name: 'Golden Jeep', color: '#ffd700', city: 'dubai' },
+  { id: 'dub_oasis', name: 'Oasis Pickup', color: '#d82800', city: 'dubai' },
+  { id: 'dub_mirage', name: 'Mirage Lux', color: '#0058a8', city: 'dubai' },
+  { id: 'dub_falcon', name: 'Falcon 4×4', color: '#007800', city: 'dubai' },
+  { id: 'dub_sunset', name: 'Sunset Hummer', color: '#ff4400', city: 'dubai' },
+  { id: 'dub_royal', name: 'Royal Escalade', color: '#0c0c44', city: 'dubai' },
+
+  // Токио — японские
+  { id: 'tok_kei', name: 'Kei Drift', color: '#ff006e', city: 'tokyo' },
+  { id: 'tok_drift', name: 'Neon Drift', color: '#fcfcfc', city: 'tokyo' },
+  { id: 'tok_civic', name: 'Tokyo Civic', color: '#0058f8', city: 'tokyo' },
+  { id: 'tok_samurai', name: 'Samurai GT', color: '#d82800', city: 'tokyo' },
+  { id: 'tok_cherry', name: 'Cherry Kei', color: '#ff006e', city: 'tokyo' },
+  { id: 'tok_midnight', name: 'Midnight RX', color: '#585858', city: 'tokyo' },
+  { id: 'tok_sakura', name: 'Sakura Hatch', color: '#ff69b4', city: 'tokyo' },
+  { id: 'tok_ae86', name: 'Turbo AE86', color: '#fcfcfc', city: 'tokyo' },
+  { id: 'tok_supra', name: 'Rain Supra', color: '#ffd700', city: 'tokyo' },
+  { id: 'tok_neon', name: 'Neon S2000', color: '#00d4ff', city: 'tokyo' },
+
+  // Монако — европейские
+  { id: 'mon_azure', name: 'Azure GT', color: '#0058a8', city: 'monaco' },
+  { id: 'mon_riviera', name: 'Riviera Coupe', color: '#ffd700', city: 'monaco' },
+  { id: 'mon_monte', name: 'Monte Carlo', color: '#d82800', city: 'monaco' },
+  { id: 'mon_citro', name: 'French Blue', color: '#0058f8', city: 'monaco' },
+  { id: 'mon_peugeot', name: 'Yellow Berlin', color: '#ffd700', city: 'monaco' },
+  { id: 'mon_formula', name: 'Red Formula', color: '#d82800', city: 'monaco' },
+  { id: 'mon_convert', name: 'Chic Convert', color: '#fc9838', city: 'monaco' },
+  { id: 'mon_rally', name: 'Harbor Rally', color: '#007800', city: 'monaco' },
+  { id: 'mon_gold', name: 'Gold Super', color: '#ffd700', city: 'monaco' },
+  { id: 'mon_palace', name: 'Palace GT', color: '#585858', city: 'monaco' },
 ];
 
 export const GAME_CONFIG = {
@@ -117,12 +154,38 @@ export const GAME_CONFIG = {
   MIN_PLAYERS_TO_START: 1,
 } as const;
 
-export const DEFAULT_AVAILABLE_CARS = CARS.map((c) => c.id);
+export function getCarsByCity(cityId: CitySceneId | string): CarOption[] {
+  return CARS.filter((c) => c.city === cityId);
+}
+
+export function getCarIdsForCity(cityId: CitySceneId | string): string[] {
+  return getCarsByCity(cityId).map((c) => c.id);
+}
+
+export function getCarById(id: string): CarOption | undefined {
+  return CARS.find((c) => c.id === id);
+}
+
+export const DEFAULT_AVAILABLE_CARS = getCarIdsForCity('dubai');
 
 export const BRAND = {
   name: 'ОриГонки',
   tagline: 'Кричи — и побеждай!',
   emoji: '🏁',
+} as const;
+
+/** Описание игры для экранов входа (8-bit стиль) */
+export const GAME_INTRO = {
+  title: 'ЧТО ЭТО?',
+  headline: 'Голосовые гонки для мероприятий',
+  essence: 'Кричи в телефон — машина едет быстрее. Кто громче, тот побеждает!',
+  steps: [
+    'Ведущий создаёт комнату и открывает большой экран',
+    'Игроки сканируют QR-код на телефоне',
+    'Разрешите микрофон и кричите — машина ускоряется',
+    'На экране видно, кто лидирует — побеждает самый громкий',
+  ],
+  playerLine: 'Кричи в микрофон — твоя машина летит вперёд!',
 } as const;
 
 export function getCityById(id: string): CityOption {

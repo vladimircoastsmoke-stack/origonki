@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/hooks/useadminaudio.ts","./src/lib/socket.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/carsprite.tsx","./src/components/gameintro.tsx","./src/components/shouthero.tsx","./src/hooks/useadminaudio.ts","./src/hooks/usecountdownbeep.ts","./src/lib/socket.ts"],"version":"5.9.3"}

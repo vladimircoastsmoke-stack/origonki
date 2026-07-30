@@ -199,6 +199,83 @@
   margin-bottom: 0.5rem;
 }
 
+.card-car-showcase {
+  cursor: default;
+  text-align: center;
+}
+
+.card-car-showcase strong {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.card-grid-cars-readonly .card-car {
+  pointer-events: none;
+}
+
+.card-action {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--accent-secondary);
+  font-weight: 700;
+}
+
+.section-hint {
+  margin-bottom: 1.25rem;
+}
+
+.car-sprite-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+.car-sprite-svg {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.car-sprite-mini .car-sprite-svg {
+  width: 60px !important;
+  height: 24px !important;
+}
+
+.lobby-item-car {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-intro-compact {
+  text-align: center;
+  padding: 1.25rem 1.5rem;
+}
+
+.game-intro-compact .game-intro-essence {
+  margin-bottom: 0;
+}
+
+.shout-hero {
+  margin: 0 auto 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.shout-hero-svg {
+  width: min(100%, 420px);
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0 var(--border);
+}
+
+.game-intro-art {
+  margin-bottom: 1.25rem;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -496,5 +573,72 @@
 
 .lobby-meta {
   text-align: center;
+  margin-top: 0.25rem;
+}
+
+/* 8-bit game intro */
+.game-intro {
+  background: var(--bg-secondary);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 4px 4px 0 var(--border);
+}
+
+.game-intro-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: var(--accent-secondary);
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+
+.game-intro-headline {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.game-intro-essence {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.game-intro-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.game-intro-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.game-intro-step-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.game-intro-player {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: var(--accent-secondary);
+  line-height: 1.8;
   margin-top: 0.25rem;
 }

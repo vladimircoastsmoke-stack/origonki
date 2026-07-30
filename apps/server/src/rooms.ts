@@ -1,7 +1,7 @@
 import type { Player, Room, MaxPlayers } from '@decibel-racing/shared';
 import {
   GAME_CONFIG,
-  DEFAULT_AVAILABLE_CARS,
+  getCarIdsForCity,
   generateRoomId,
   calculateProgressTick,
   getRaceResults,
@@ -41,7 +41,7 @@ export function createRoom(maxPlayers: MaxPlayers, city: string): Room {
     id,
     maxPlayers,
     city,
-    availableCars: [...DEFAULT_AVAILABLE_CARS],
+    availableCars: getCarIdsForCity(city),
     status: 'lobby',
     players: [],
     createdAt: Date.now(),
@@ -175,6 +175,10 @@ export function setRoomCity(roomId: string, city: string): void {
   if (!room) throw new Error('Комната не найдена');
   if (room.status !== 'lobby') throw new Error('Нельзя менять город во время гонки');
   room.city = city;
+  room.availableCars = getCarIdsForCity(city);
+  room.players.forEach((p) => {
+    p.carId = '';
+  });
 }
 
 export function setRoomMaxPlayers(roomId: string, maxPlayers: MaxPlayers): void {
