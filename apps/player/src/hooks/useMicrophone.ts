@@ -14,6 +14,16 @@ export function useMicrophone() {
     try {
       setError(null);
 
+      if (!window.isSecureContext) {
+        setError('insecure');
+        return;
+      }
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setError('unsupported');
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,

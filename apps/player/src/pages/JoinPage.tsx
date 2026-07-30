@@ -77,7 +77,6 @@ export default function JoinPage() {
       if (updatedRoom.status === 'countdown' || updatedRoom.status === 'racing') {
         if (screen !== 'racing' && me?.carId) {
           setScreen('racing');
-          if (!isActive) startMic();
         }
       }
       if (updatedRoom.status === 'lobby' && screen === 'results') {
@@ -97,7 +96,11 @@ export default function JoinPage() {
       socket.off(SOCKET_EVENTS.SERVER_ROOM_UPDATE);
       socket.off(SOCKET_EVENTS.SERVER_RACE_FINISHED);
     };
-  }, [socket, roomId, persistedId, nickname, screen, isActive, startMic, stopMic]);
+  }, [socket, roomId, persistedId, nickname, screen, stopMic]);
+
+  const handleStartMic = () => {
+    startMic();
+  };
 
   const joinRoom = () => {
     if (!roomId || !nickname.trim()) return;
@@ -195,29 +198,69 @@ export default function JoinPage() {
         {selectedCar && (
           <p>{CARS.find((c) => c.id === selectedCar)?.emoji} {CARS.find((c) => c.id === selectedCar)?.name}</p>
         )}
+        {!window.isSecureContext && (
+          <p className="player-error" style={{ marginTop: '1rem' }}>
+            ⚠️ Микрофон на iPhone работает только по HTTPS.<br />
+            Используйте ссылку из «1-ТЕСТ-С-ДРУГОМ», не Wi-Fi.
+          </p>
+        )}
+        {window.isSecureContext && !isActive && (
+          <button className="player-btn" style={{ marginTop: '1.5rem' }} onClick={handleStartMic}>
+            🎤 Проверить микрофон
+          </button>
+        )}
+        {isActive && (
+          <p style={{ color: 'var(--success)', marginTop: '1rem' }}>✓ Микрофон готов!</p>
+        )}
       </div>
     );
   }
 
   if (screen === 'racing') {
-    if (micError && !isActive) {
+    if (!isActive) {
       return (
         <div className="player-screen mic-error">
-          <h1>🎤 Нужен микрофон!</h1>
-          {micError === 'permission_denied' && (
+          <h1>🎤 Включите микрофон!</h1>
+          {micError === 'insecure' && (
             <>
-              <p>Разрешите доступ к микрофону для участия в гонке.</p>
+              <p className="player-error">
+                Вы открыли игру по HTTP (Wi-Fi). На iPhone микрофон <strong>не работает</strong> без HTTPS.
+              </p>
               <div className="mic-instructions">
-                <p><strong>iOS Safari:</strong> Настройки → Safari → Микрофон → Разрешить</p>
-                <p><strong>Android Chrome:</strong> Нажмите 🔒 в адресной строке → Микрофон → Разрешить</p>
-                <p>После этого нажмите кнопку ниже.</p>
+                <p><strong>Решение:</strong></p>
+                <p>1. На компьютере запустите <strong>1-ТЕСТ-С-ДРУГОМ.command</strong></p>
+                <p>2. Откройте <strong>https://....loca.lt/join/{roomId}</strong></p>
+                <p>3. На странице loca.lt введите публичный IP (ifconfig.me)</p>
               </div>
             </>
           )}
-          {micError === 'no_microphone' && <p>Микрофон не найден на устройстве.</p>}
-          <button className="player-btn" onClick={startMic}>
-            🎤 Включить микрофон
-          </button>
+          {micError === 'permission_denied' && (
+            <>
+              <p>Разрешите доступ к микрофону.</p>
+              <div className="mic-instructions">
+                <p><strong>iOS Safari:</strong> Настройки → Safari → Микрофон → Разрешить</p>
+                <p><strong>Android Chrome:</strong> 🔒 в адресной строке → Микрофон → Разрешить</p>
+              </div>
+            </>
+          )}
+          {micError === 'no_microphone' && <p>Микрофон не найден.</p>}
+          {micError === 'unsupported' && (
+            <p className="player-error">Откройте в Chrome или Safari.</p>
+          )}
+          {!micError && <p>Нажмите кнопку и разрешите микрофон.</p>}
+          {micError !== 'insecure' && (
+            <button
+              type="button"
+              className="player-btn mic-btn"
+              onClick={handleStartMic}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleStartMic();
+              }}
+            >
+              🎤 Включить микрофон
+            </button>
+          )}
         </div>
       );
     }

@@ -237,6 +237,22 @@
   margin-bottom: 0.5rem;
 }
 
+.mic-btn {
+  margin-top: 1.5rem;
+  min-height: 56px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 320px;
+}
+
+.player-btn {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 /* Results */
 .results .result-place {
   font-family: var(--font-display);

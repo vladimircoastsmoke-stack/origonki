@@ -7,6 +7,7 @@
     "build:prod": "pnpm build && node scripts/copy-static.mjs",
     "start:prod": "NODE_ENV=production node apps/server/dist/index.js",
     "share": "node scripts/share.mjs",
+    "iphone": "node scripts/iphone.mjs",
     "test-with-friend": "node scripts/share.mjs",
     "deploy": "node scripts/deploy-render.mjs",
     "deploy:render": "node scripts/deploy-render.mjs",
@@ -14,6 +15,8 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
+    "@ngrok/ngrok": "^1.4.1",
+    "localtunnel": "^2.0.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },
