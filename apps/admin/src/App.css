@@ -561,6 +561,34 @@
   filter: brightness(1.08);
 }
 
+.audio-mute-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 0 var(--border);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.audio-mute-btn:hover {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+
+.audio-mute-btn[aria-pressed='true'] {
+  background: rgba(232, 69, 60, 0.2);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
 .setup-steps {
   display: flex;
   gap: 1rem;

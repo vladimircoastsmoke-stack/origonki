@@ -15,9 +15,23 @@ class ChiptuneEngine {
   private scheduleTimer: ReturnType<typeof setTimeout> | null = null;
   private generation = 0;
   private unlocked = false;
+  private muted = false;
+  private readonly baseVolume = 0.38;
 
   get isUnlocked() {
     return this.unlocked;
+  }
+
+  get isMuted() {
+    return this.muted;
+  }
+
+  setMuted(muted: boolean): void {
+    this.muted = muted;
+    if (this.master) {
+      this.master.gain.value = muted ? 0 : this.baseVolume;
+    }
+    if (muted) this.stop();
   }
 
   async unlock(): Promise<boolean> {
@@ -25,7 +39,7 @@ class ChiptuneEngine {
       if (!this.ctx) {
         this.ctx = new AudioContext();
         this.master = this.ctx.createGain();
-        this.master.gain.value = 0.38;
+        this.master.gain.value = this.muted ? 0 : this.baseVolume;
         this.master.connect(this.ctx.destination);
       }
       if (this.ctx.state === 'suspended') {
@@ -79,7 +93,7 @@ class ChiptuneEngine {
   }
 
   private playDef(key: string, def: TrackDef, opts?: ScheduleOpts) {
-    if (!this.ctx || !this.master || !this.unlocked) return;
+    if (!this.ctx || !this.master || !this.unlocked || this.muted) return;
     if (this.activeKey === key) return;
 
     this.stop();
@@ -90,7 +104,7 @@ class ChiptuneEngine {
   }
 
   playCountdownTick(value: number, cityId?: CitySceneId) {
-    if (!this.ctx || !this.master || !this.unlocked) return;
+    if (!this.ctx || !this.master || !this.unlocked || this.muted) return;
     if (!this.session) this.beginSession();
     const t = this.ctx.currentTime;
 

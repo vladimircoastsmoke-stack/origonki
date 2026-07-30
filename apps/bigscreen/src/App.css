@@ -589,3 +589,52 @@
 .game-intro-art {
   margin-bottom: 1rem;
 }
+
+.audio-unlock-hint {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--accent);
+  color: #0c0c44;
+  border: 2px solid #0c0c44;
+  border-radius: 4px;
+  box-shadow: 0 4px 0 #0c0c44;
+  cursor: pointer;
+  line-height: 1.6;
+}
+
+.audio-unlock-hint:hover {
+  filter: brightness(1.08);
+}
+
+.audio-mute-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(12, 12, 68, 0.92);
+  color: #fcfcfc;
+  border: 2px solid #585858;
+  border-radius: 4px;
+  box-shadow: 0 4px 0 #0c0c44;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.audio-mute-btn:hover {
+  border-color: #fc9838;
+  color: #fc9838;
+}
+
+.audio-mute-btn[aria-pressed='true'] {
+  background: rgba(216, 40, 0, 0.25);
+  border-color: #d82800;
+  color: #fc9838;
+}

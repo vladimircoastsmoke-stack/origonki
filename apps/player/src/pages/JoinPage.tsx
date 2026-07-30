@@ -20,6 +20,7 @@ import { GameIntroBox } from '../components/GameIntro';
 import { ShoutHero } from '../components/ShoutHero';
 import { CarSpriteMini } from '../components/CarSprite';
 import { usePlayerAudio, useCountdownBeep } from '../hooks/usePlayerAudio';
+import { AudioMuteButton } from '../components/AudioMuteButton';
 
 type Screen = 'nickname' | 'car' | 'waiting' | 'racing' | 'results' | 'mic-error';
 
@@ -251,10 +252,12 @@ export default function JoinPage() {
     .map((id) => getCarById(id))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
   const takenCars = new Set(room?.players.filter((p) => p.carId && p.id !== socket.id).map((p) => p.carId));
+  const muteBtn = <AudioMuteButton />;
 
   if (screen === 'nickname') {
     return (
       <div className="player-screen">
+        {muteBtn}
         <ConnectionBadge connected={connected} />
         <div className="brand-mark">{BRAND.emoji}</div>
         <h1 className="player-title">{BRAND.name}</h1>
@@ -284,6 +287,7 @@ export default function JoinPage() {
   if (screen === 'car') {
     return (
       <div className="player-screen">
+        {muteBtn}
         <ConnectionBadge connected={connected} />
         <ShoutHero className="player-hero-compact" />
         <h1 className="player-title">Выберите машину</h1>
@@ -312,6 +316,7 @@ export default function JoinPage() {
   if (screen === 'waiting') {
     return (
       <div className="player-screen waiting">
+        {muteBtn}
         <ConnectionBadge connected={connected} />
         <ShoutHero className="player-hero-compact" />
         <div className="pulse-icon">🏎️</div>
@@ -350,6 +355,7 @@ export default function JoinPage() {
     if (!isActive) {
       return (
         <div className="player-screen mic-error">
+          {muteBtn}
           <ConnectionBadge connected={connected} />
           <h1>🎤 Включите микрофон!</h1>
           {!connected && (
@@ -408,6 +414,7 @@ export default function JoinPage() {
 
     return (
       <div className="player-screen racing">
+        {muteBtn}
         <ConnectionBadge connected={connected} />
         {!raceActive && <RoomStatusHint room={room} />}
         {!connected && (
@@ -459,6 +466,7 @@ export default function JoinPage() {
   if (screen === 'results') {
     return (
       <div className="player-screen results">
+        {muteBtn}
         <ShoutHero className="player-hero-compact" />
         <div className="result-place">#{myPlace}</div>
         <h1>{myPlace === 1 ? '🏆 Победа!' : myPlace === 2 ? '🥈' : myPlace === 3 ? '🥉' : 'Финиш!'}</h1>

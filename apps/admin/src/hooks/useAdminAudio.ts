@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import {
   ADMIN_MENU_TRACK,
   asCitySceneId,
+  audioSettings,
   chiptune,
   type RoomStatus,
 } from '@decibel-racing/shared';
@@ -16,12 +17,15 @@ export function useAdminAudio(
   locationTouched: boolean,
 ) {
   const [needsUnlock, setNeedsUnlock] = useState(true);
+  const [audioTick, setAudioTick] = useState(0);
   const cityId = asCitySceneId(step === 'lobby' && roomCity ? roomCity : selectedCity);
 
   const unlock = useCallback(async () => {
     const ok = await chiptune.unlock();
     if (ok) setNeedsUnlock(false);
   }, []);
+
+  useEffect(() => audioSettings.subscribe(() => setAudioTick((n) => n + 1)), []);
 
   useEffect(() => {
     const tryAuto = () => {
@@ -39,6 +43,11 @@ export function useAdminAudio(
   useEffect(() => {
     if (needsUnlock) return;
 
+    if (!audioSettings.shouldPlayMusic()) {
+      chiptune.stop();
+      return;
+    }
+
     if (step === 'lobby' && roomStatus === 'lobby') {
       chiptune.play(cityId, 'lobby');
       return;
@@ -54,7 +63,7 @@ export function useAdminAudio(
     }
 
     chiptune.stop();
-  }, [step, cityId, roomStatus, locationTouched, needsUnlock]);
+  }, [step, cityId, roomStatus, locationTouched, needsUnlock, audioTick]);
 
   return { needsUnlock, unlock };
 }

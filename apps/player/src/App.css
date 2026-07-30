@@ -452,3 +452,31 @@ body.theme-dendy .results h1 {
 .game-intro-art {
   margin-bottom: 1rem;
 }
+
+.audio-mute-btn {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  font-family: var(--font-display);
+  font-size: 0.45rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 3px 0 var(--border);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.audio-mute-btn:hover {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+
+.audio-mute-btn[aria-pressed='true'] {
+  background: rgba(232, 69, 60, 0.2);
+  border-color: var(--danger);
+  color: var(--danger);
+}

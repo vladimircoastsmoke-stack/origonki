@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { chiptune, type CitySceneId } from '@decibel-racing/shared';
+import { audioSettings, chiptune, type CitySceneId } from '@decibel-racing/shared';
 
 type RoomStatus = 'waiting' | 'countdown' | 'racing' | 'finished';
 
@@ -9,12 +9,21 @@ export function useGameAudio(
   countdown?: number,
 ) {
   const [needsUnlock, setNeedsUnlock] = useState(true);
+  const [audioTick, setAudioTick] = useState(0);
   const prevCountdown = useRef<number | undefined>();
-  const victoryPlayed = useRef(false);
 
   const unlock = useCallback(async () => {
     const ok = await chiptune.unlock();
     if (ok) setNeedsUnlock(false);
+  }, []);
+
+  useEffect(() => audioSettings.subscribe(() => setAudioTick((n) => n + 1)), []);
+
+  useEffect(() => {
+    audioSettings.setBigScreenActive(true);
+    return () => {
+      audioSettings.setBigScreenActive(false);
+    };
   }, []);
 
   useEffect(() => {
@@ -33,39 +42,24 @@ export function useGameAudio(
   useEffect(() => {
     if (needsUnlock || !roomStatus) return;
 
+    if (!audioSettings.shouldPlayLobbyMusic(roomStatus)) {
+      chiptune.stop();
+      return;
+    }
+
     if (roomStatus === 'waiting') {
-      victoryPlayed.current = false;
       chiptune.play(cityId, 'lobby');
-      return;
     }
-
-    if (roomStatus === 'racing') {
-      victoryPlayed.current = false;
-      chiptune.play(cityId, 'race');
-      return;
-    }
-
-    if (roomStatus === 'finished') {
-      chiptune.stop();
-      if (!victoryPlayed.current) {
-        victoryPlayed.current = true;
-        chiptune.play(cityId, 'victory');
-      }
-      return;
-    }
-
-    if (roomStatus === 'countdown') {
-      chiptune.stop();
-    }
-  }, [roomStatus, cityId, needsUnlock]);
+  }, [roomStatus, cityId, needsUnlock, audioTick]);
 
   useEffect(() => {
     if (needsUnlock || roomStatus !== 'countdown') return;
+    if (!audioSettings.shouldPlaySfx()) return;
     if (countdown === undefined) return;
     if (prevCountdown.current === countdown) return;
     prevCountdown.current = countdown;
     chiptune.playCountdownTick(countdown, cityId);
-  }, [countdown, roomStatus, cityId, needsUnlock]);
+  }, [countdown, roomStatus, cityId, needsUnlock, audioTick]);
 
   return { needsUnlock, unlock };
 }

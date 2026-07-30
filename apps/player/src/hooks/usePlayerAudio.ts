@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { SOCKET_EVENTS, chiptune, asCitySceneId, type CitySceneId } from '@decibel-racing/shared';
+import { SOCKET_EVENTS, audioSettings, chiptune, asCitySceneId, type CitySceneId } from '@decibel-racing/shared';
 import type { Socket } from 'socket.io-client';
 
 export function usePlayerAudio() {
@@ -38,6 +38,7 @@ export function useCountdownBeep(
     if (!audioReady || !city) return;
 
     const onTick = (data: { value: number }) => {
+      if (!audioSettings.shouldPlaySfx()) return;
       if (prevCountdown.current === data.value) return;
       prevCountdown.current = data.value;
       chiptune.playCountdownTick(data.value, city);

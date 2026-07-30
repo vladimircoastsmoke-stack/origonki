@@ -9,6 +9,7 @@ import {
   getCarsByCity,
   getCarById,
   asCitySceneId,
+  openBigScreenRoom,
   type Room,
   type Player,
   type MaxPlayers,
@@ -19,6 +20,7 @@ import { useAdminAudio } from './hooks/useAdminAudio';
 import { useCountdownBeep } from './hooks/useCountdownBeep';
 import { GameIntroBox } from './components/GameIntro';
 import { CarSpriteMini } from './components/CarSprite';
+import { AudioControls } from './components/AudioControls';
 import './App.css';
 
 type Step = 'create' | 'lobby';
@@ -58,11 +60,7 @@ function App() {
 
   useCountdownBeep(socket, room?.city ?? selectedCity, !needsUnlock);
 
-  const audioHint = needsUnlock ? (
-    <button type="button" className="audio-unlock-hint" onClick={() => void unlock()}>
-      🔊 Нажмите для музыки
-    </button>
-  ) : null;
+  const audioControls = <AudioControls needsUnlock={needsUnlock} onUnlock={unlock} />;
 
   useEffect(() => {
     socket.on(SOCKET_EVENTS.SERVER_ROOM_UPDATE, (updatedRoom: Room) => {
@@ -152,7 +150,7 @@ function App() {
               return;
             }
             if (botResponse.room) setRoom(botResponse.room);
-            window.open(resolveBigScreenUrl(created.id), '_blank', 'noopener,noreferrer');
+            openBigScreenRoom(created.id);
           },
         );
       },
@@ -324,7 +322,7 @@ function App() {
     if (setupStep === 'location') {
       return (
         <div className="admin">
-          {audioHint}
+          {audioControls}
           <header className="admin-header">
             <div className="brand-logo">{BRAND.emoji}</div>
             <h1>{BRAND.name}</h1>
@@ -350,7 +348,7 @@ function App() {
     const city = getCityById(selectedCity);
     return (
       <div className="admin">
-        {audioHint}
+        {audioControls}
         <header className="admin-header admin-header-compact">
           <BackButton
             label="К выбору локации"
@@ -395,7 +393,7 @@ function App() {
     const city = getCityById(selectedCity);
     return (
       <div className="admin">
-        {audioHint}
+        {audioControls}
         <header className="admin-header admin-header-compact">
           <h1>Сменить локацию</h1>
           <p className="hint">Сейчас: {city.name}</p>
@@ -414,7 +412,7 @@ function App() {
   if (lobbyEdit === 'players' && room) {
     return (
       <div className="admin">
-        {audioHint}
+        {audioControls}
         <header className="admin-header admin-header-compact">
           <h1>Сменить число игроков</h1>
           <p className="hint">Сейчас: {room.maxPlayers} · подключено {room.players.length}</p>
@@ -434,7 +432,7 @@ function App() {
 
   return (
     <div className="admin">
-      {audioHint}
+      {audioControls}
       <header className="admin-header admin-header-compact">
         <div className="admin-header-row">
           <h1>{BRAND.emoji} {BRAND.name}</h1>
@@ -478,7 +476,7 @@ function App() {
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => room && window.open(resolveBigScreenUrl(room.id), '_blank', 'noopener,noreferrer')}
+              onClick={() => room && openBigScreenRoom(room.id)}
               disabled={!room}
             >
               Открыть Big Screen
