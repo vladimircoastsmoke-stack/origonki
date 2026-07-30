@@ -75,7 +75,7 @@ case "$CMD" in
     node "$ROOT/scripts/deploy-render.mjs"
     ;;
   autodeploy)
-    node "$ROOT/scripts/autodeploy.mjs"
+    bash "$ROOT/scripts/autodeploy.sh"
     ;;
   prod)
     free_port

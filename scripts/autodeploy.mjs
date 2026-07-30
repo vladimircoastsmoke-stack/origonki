@@ -117,8 +117,9 @@ console.log('');
 console.log('📡 Репозиторий:', GITHUB_REPO);
 console.log('');
 console.log('═══════════════════════════════════════════════════════');
-console.log('  Токен GitHub (CLASSIC, галочка repo):');
+console.log('  Токен GitHub (CLASSIC):');
 console.log('  https://github.com/settings/tokens/new');
+console.log('  → галочка: repo');
 console.log('═══════════════════════════════════════════════════════');
 console.log('');
 
