@@ -1,5 +1,5 @@
 #!/bin/bash
-# Запуск в Терминале:  bash ~/Desktop/Гонки/6-ПУШ-НА-GITHUB.sh
+# Запуск: bash ~/Desktop/Гонки/6-ПУШ-НА-GITHUB.sh
 set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
@@ -7,6 +7,7 @@ cd "$ROOT"
 export PATH="/usr/local/bin:/opt/homebrew/bin:$HOME/.local/bin:$PATH"
 
 GITHUB_REPO="https://github.com/vladimircoastsmoke-stack/origonki.git"
+GITHUB_USER="vladimircoastsmoke-stack"
 
 echo ""
 echo "🏁  ОриГonki — отправка на GitHub"
@@ -30,31 +31,50 @@ else
   git remote add origin "$GITHUB_REPO"
 fi
 
-echo "📡 $GITHUB_REPO"
-echo ""
-
 if [ -n "$(git status --porcelain)" ]; then
   echo "💾 Сохраняю изменения..."
   git add -A
   git commit -m "ОриГonki: обновление"
 fi
 
-echo "📤 Отправляю на GitHub..."
-echo "   (пароль = Personal Access Token с github.com/settings/tokens)"
+echo ""
+echo "📡 Репозиторий: $GITHUB_REPO"
+echo ""
+echo "═══════════════════════════════════════════════════════"
+echo "  ТОКЕН — создайте CLASSIC (не fine-grained!):"
+echo "  https://github.com/settings/tokens/new"
+echo "  → Generate new token (CLASSIC)"
+echo "  → галочка: repo"
+echo "  → Generate → скопировать"
+echo "═══════════════════════════════════════════════════════"
+echo ""
+echo "⚠️  В обычном Password символы НЕ ВИДНЫ — кажется что не вставилось."
+echo "    Здесь токен будет ВИДЕН — вставьте Cmd+V и проверьте:"
 echo ""
 
-if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
-  gh auth setup-git 2>/dev/null || true
+read -r -p "Вставьте токен сюда и Enter: " GITHUB_TOKEN
+
+if [ -z "$GITHUB_TOKEN" ]; then
+  echo "❌ Токен пустой. Запустите скрипт снова."
+  read -r -p "Enter..."
+  exit 1
 fi
 
-git push -u origin main
+echo ""
+echo "📤 Отправляю на GitHub..."
+
+# Push с токеном в URL (обходит невидимый Password)
+git push "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/vladimircoastsmoke-stack/origonki.git" main
+
+# Вернём чистый remote без токена в истории
+git remote set-url origin "$GITHUB_REPO"
 
 echo ""
 echo "✅ Готово! Код на GitHub."
+echo "   https://github.com/vladimircoastsmoke-stack/origonki"
 echo ""
-echo "👉 Следующий шаг — в Терминале:"
+echo "👉 Следующий шаг:"
 echo "   bash ~/Desktop/Гонки/2-ДЕПЛОЙ-НА-RENDER.command"
-echo "   (или двойной клик по 2-ДЕПЛОЙ-НА-RENDER.command)"
 echo ""
 
 open "https://github.com/vladimircoastsmoke-stack/origonki" 2>/dev/null || true
