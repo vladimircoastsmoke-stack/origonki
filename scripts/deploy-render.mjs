@@ -40,9 +40,11 @@ function ask(question) {
 }
 
 console.log('');
-console.log('☁️  Decibel Racing — деплой на Render');
+console.log('☁️  ОриГonki — деплой на Render');
 console.log('══════════════════════════════════════');
 console.log('');
+
+const DEFAULT_REPO = 'https://github.com/vladimircoastsmoke-stack/origonki.git';
 
 // Проверка git
 if (!existsSync(join(root, '.git'))) {
@@ -65,14 +67,14 @@ if (!remote) {
   console.log('');
   console.log('📌 GitHub-репозиторий ещё не подключён.');
   console.log('');
-  console.log('   1. Откройте: https://github.com/new');
-  console.log('      Название: decibel-racing');
-  console.log('      (можно Private)');
+  console.log('   1. Сначала запустите: 6-ПУШ-НА-GITHUB.command');
+  console.log('   2. Или создайте репо: https://github.com/new');
+  console.log('      Название: origonki');
   console.log('');
 
-  openUrl('https://github.com/new');
+  openUrl('https://github.com/vladimircoastsmoke-stack/origonki');
 
-  const repoUrl = await ask('   2. Вставьте URL репозитория (https://github.com/USER/decibel-racing.git): ');
+  const repoUrl = await ask(`   URL репозитория [Enter = ${DEFAULT_REPO}]: `) || DEFAULT_REPO;
 
   if (!repoUrl || !repoUrl.includes('github.com')) {
     console.log('❌ Неверный URL. Запустите команду снова.');
@@ -100,12 +102,12 @@ console.log('🌐 Открываю Render для финального шага..
 console.log('');
 console.log('   В браузере:');
 console.log('   → New Blueprint Instance');
-console.log('   → Подключите репозиторий decibel-racing');
+console.log('   → Подключите репозиторий origonki');
 console.log('   → Нажмите Apply');
 console.log('   → Подождите ~5 минут');
 console.log('');
 console.log('   После деплоя ваш URL:');
-console.log('   https://decibel-racing-xxxx.onrender.com/admin/');
+console.log('   https://origonki-xxxx.onrender.com/admin/');
 console.log('');
 
 openUrl('https://dashboard.render.com/blueprints');
