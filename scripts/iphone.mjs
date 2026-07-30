@@ -30,13 +30,11 @@ function loadEnv() {
 }
 
 async function startServer() {
-  if (!existsSync(publicDir)) {
-    console.log('📦 Собираю приложение...');
-    const pnpm = existsSync(join(root, 'node_modules/.bin/pnpm'))
-      ? join(root, 'node_modules/.bin/pnpm')
-      : 'npx --yes pnpm@9.15.0';
-    execSync(`${pnpm} build:prod`, { cwd: root, stdio: 'inherit' });
-  }
+  console.log('📦 Собираю приложение (последние правки)...');
+  const pnpm = existsSync(join(root, 'node_modules/.bin/pnpm'))
+    ? join(root, 'node_modules/.bin/pnpm')
+    : 'npx --yes pnpm@9.15.0';
+  execSync(`${pnpm} build:prod`, { cwd: root, stdio: 'inherit' });
 
   killPort(3001);
   await new Promise((r) => setTimeout(r, 500));
@@ -44,12 +42,12 @@ async function startServer() {
   console.log('🚀 Запускаю сервер на порту 3001...\n');
   return spawn('node', ['apps/server/dist/index.js'], {
     cwd: root,
-    env: { ...process.env, NODE_ENV: 'production' },
+    env: { ...process.env, NODE_ENV: 'production', ALLOW_SOLO: '1' },
     stdio: 'inherit',
   });
 }
 
-console.log('🏎️  Decibel Racing — тест на iPhone\n');
+console.log('🏁  ОриГонки — тест на iPhone\n');
 
 loadEnv();
 const localIp = getLocalIp();

@@ -102,26 +102,25 @@ export function useVolumeSender(
   isActive: boolean,
   sendFn: (value: number) => void
 ) {
-  const lastSentRef = useRef(0);
+  const volumeRef = useRef(volume);
+  volumeRef.current = volume;
 
   useEffect(() => {
     if (!isActive) return;
 
     const interval = setInterval(() => {
-      const now = Date.now();
-      if (now - lastSentRef.current >= GAME_CONFIG.VOLUME_SEND_INTERVAL_MS) {
-        sendFn(volume);
-        lastSentRef.current = now;
-      }
+      sendFn(volumeRef.current);
     }, GAME_CONFIG.VOLUME_SEND_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [volume, isActive, sendFn]);
+  }, [isActive, sendFn]);
 }
 
 export function getStorageKey(roomId: string): string {
-  return `decibel-racing:${roomId}`;
+  return `origonki:${roomId}`;
 }
+
+const LEGACY_PREFIX = 'decibel-racing:';
 
 export function savePlayerSession(roomId: string, persistedId: string, nickname: string): void {
   localStorage.setItem(getStorageKey(roomId), JSON.stringify({ persistedId, nickname }));
@@ -129,7 +128,12 @@ export function savePlayerSession(roomId: string, persistedId: string, nickname:
 
 export function loadPlayerSession(roomId: string): { persistedId: string; nickname: string } | null {
   try {
-    const raw = localStorage.getItem(getStorageKey(roomId));
+    const key = getStorageKey(roomId);
+    let raw = localStorage.getItem(key);
+    if (!raw) {
+      raw = localStorage.getItem(`${LEGACY_PREFIX}${roomId}`);
+      if (raw) localStorage.setItem(key, raw);
+    }
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;

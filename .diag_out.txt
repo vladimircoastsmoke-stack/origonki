@@ -1,0 +1,2 @@
+{"status":"ok","timestamp":1785403535846}COMMAND  PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    4967 pavel   12u  IPv4 0x6817dbc86f4ffdc3      0t0  TCP *:redwood-broker (LISTEN)

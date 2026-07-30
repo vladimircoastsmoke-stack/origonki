@@ -1,5 +1,25 @@
 export type RoomStatus = 'lobby' | 'countdown' | 'racing' | 'finished';
 
+export type MaxPlayers = 2 | 4 | 6 | 8 | 10;
+
+export type CityTheme = 'dendy';
+
+export type CitySceneId = 'dubai' | 'murmansk' | 'monaco' | 'tokyo';
+
+export interface CityPalette {
+  skyTop: string;
+  skyBottom: string;
+  ground: string;
+  road: string;
+  building: string;
+  buildingAlt: string;
+  window: string;
+  windowLit: string;
+  accent: string;
+  snow?: string;
+  water?: string;
+}
+
 export interface Player {
   id: string;
   nickname: string;
@@ -11,7 +31,7 @@ export interface Player {
 
 export interface Room {
   id: string;
-  maxPlayers: 2 | 4;
+  maxPlayers: MaxPlayers;
   city: string;
   eventLogoUrl?: string;
   availableCars: string[];
@@ -22,11 +42,14 @@ export interface Room {
 }
 
 export interface CityOption {
-  id: string;
+  id: CitySceneId;
   name: string;
   description: string;
   gradient: [string, string];
   accent: string;
+  theme: CityTheme;
+  scene: CitySceneId;
+  palette: CityPalette;
 }
 
 export interface CarOption {

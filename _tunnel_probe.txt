@@ -1,0 +1,97 @@
+{"status":"ok","timestamp":1785405294080}@decibel-racing/bigscreen:build: 
+@decibel-racing/bigscreen:build: vite v6.4.3 building for production...
+@decibel-racing/bigscreen:build: transforming...
+@decibel-racing/bigscreen:build: ✓ 425 modules transformed.
+@decibel-racing/bigscreen:build: rendering chunks...
+@decibel-racing/bigscreen:build: computing gzip size...
+@decibel-racing/bigscreen:build: dist/index.html                   0.55 kB │ gzip:   0.39 kB
+@decibel-racing/bigscreen:build: dist/assets/index-D9yer2lf.css    8.83 kB │ gzip:   2.37 kB
+@decibel-racing/bigscreen:build: dist/assets/index-BC6TLit0.js   327.08 kB │ gzip: 106.62 kB
+@decibel-racing/bigscreen:build: ✓ built in 3.77s
+@decibel-racing/admin:build: cache hit, replaying logs 951f914556c6349c
+@decibel-racing/server:build: cache hit, replaying logs 005fa77dc314ecd5
+@decibel-racing/admin:build: 
+@decibel-racing/admin:build: > @decibel-racing/admin@0.0.1 build /Users/pavel/Desktop/Гонки/apps/admin
+@decibel-racing/admin:build: > tsc -b && vite build
+@decibel-racing/admin:build: 
+@decibel-racing/admin:build: vite v6.4.3 building for production...
+@decibel-racing/admin:build: transforming...
+@decibel-racing/admin:build: ✓ 65 modules transformed.
+@decibel-racing/admin:build: rendering chunks...
+@decibel-racing/admin:build: computing gzip size...
+@decibel-racing/admin:build: dist/index.html                   0.65 kB │ gzip:  0.44 kB
+@decibel-racing/admin:build: dist/assets/index-FJYdc8ix.css    7.03 kB │ gzip:  2.05 kB
+@decibel-racing/admin:build: dist/assets/index-uWLDJBVV.js   212.12 kB │ gzip: 69.10 kB
+@decibel-racing/server:build: 
+@decibel-racing/server:build: > @decibel-racing/server@0.0.1 build /Users/pavel/Desktop/Гонки/apps/server
+@decibel-racing/server:build: > tsc
+@decibel-racing/server:build: 
+@decibel-racing/player:build: cache hit, replaying logs 0d259663762dba97
+@decibel-racing/admin:build: ✓ built in 2.36s
+@decibel-racing/player:build: 
+@decibel-racing/player:build: > @decibel-racing/player@0.0.1 build /Users/pavel/Desktop/Гонки/apps/player
+@decibel-racing/player:build: > tsc -b && vite build
+@decibel-racing/player:build: 
+@decibel-racing/player:build: vite v6.4.3 building for production...
+@decibel-racing/player:build: transforming...
+@decibel-racing/player:build: ✓ 434 modules transformed.
+@decibel-racing/player:build: rendering chunks...
+@decibel-racing/player:build: computing gzip size...
+@decibel-racing/player:build: dist/index.html                   0.61 kB │ gzip:   0.42 kB
+@decibel-racing/player:build: dist/assets/index-D8C6xhKM.css    6.34 kB │ gzip:   1.85 kB
+@decibel-racing/player:build: dist/assets/index-CVLxFgeM.js   349.11 kB │ gzip: 114.53 kB
+@decibel-racing/player:build: ✓ built in 3.94s
+
+ Tasks:    5 successful, 5 total
+Cached:    5 cached, 5 total
+  Time:    78ms >>> FULL TURBO
+
+✓ apps/admin/dist → apps/server/public/admin
+✓ apps/bigscreen/dist → apps/server/public/bigscreen
+✓ apps/player/dist → apps/server/public/player
+
+✅ Production bundle ready in apps/server/public/
+🚀 Запускаю сервер на порту 3001...
+
+📦 Serving production frontend from /admin, /screen, /join
+🏁  ОриГонки server running on port 3001
+🌐 Создаю HTTPS-туннель (1–2 минуты)...
+
+   → Pinggy (HTTPS)...
+   Your tunnel will expire in 60 minutes. Upgrade to Pinggy Pro to get unrestricted tunnels. https://dashboard.pinggy.io
+   https://kvzpt-185-189-45-206.run.pinggy-free.link
+   https://rqklo-185-189-45-206.free.pinggy.net
+
+   ✓ Pinggy (HTTPS) OK
+
+
+════════════════════════════════════════════════════════
+  ✅ iPhone готов! HTTPS-ссылки:
+════════════════════════════════════════════════════════
+  📱 Admin:   https://kvzpt-185-189-45-206.run.pinggy-free.link/admin/
+  📱 Player:  https://kvzpt-185-189-45-206.run.pinggy-free.link/join/КОД   ← на iPhone
+  🖥 Screen:  https://kvzpt-185-189-45-206.run.pinggy-free.link/screen/?room=КОД
+════════════════════════════════════════════════════════
+
+  📶 Wi-Fi (Android): http://192.168.1.151:3001/join/КОД
+
+  iPhone: Разрешить микрофон → кричать в телефон
+  ❌ Не закрывайте это окно!
+
+command: "LOG=/tmp/iphone_tunnel.log; for i in $(seq 1 90); do if grep -qE \"Admin:.*https://\" \"$LOG\" 2>/dev/null; then grep -E \"https://|Admin:\" \"$LOG\"; exit 0; fi; if grep -q \"iPhone готов\" \"$LOG\" 2>/dev/null; then grep -E \"https://|Admin:\" \"$LOG\"; exit 0; fi; sleep 2; done; echo \"TIMEOUT\"; tail -40 \"$LOG\""
+  📱 Admin:   https://openssh.com/pq.html/admin/
+  📱 Player:  https://openssh.com/pq.html/join/КОД   ← на iPhone
+  🖥 Screen:  https://openssh.com/pq.html/screen/?room=КОД
+   Your tunnel will expire in 60 minutes. Upgrade to Pinggy Pro to get unrestricted tunnels. https://dashboard.pinggy.io
+   https://mztmq-185-189-45-206.free.pinggy.net
+   https://zgmcy-185-189-45-206.run.pinggy-free.link
+  📱 Admin:   https://mztmq-185-189-45-206.free.pinggy.net/admin/
+  📱 Player:  https://mztmq-185-189-45-206.free.pinggy.net/join/КОД   ← на iPhone
+  🖥 Screen:  https://mztmq-185-189-45-206.free.pinggy.net/screen/?room=КОД
+   Your tunnel will expire in 60 minutes. Upgrade to Pinggy Pro to get unrestricted tunnels. https://dashboard.pinggy.io
+   https://kvzpt-185-189-45-206.run.pinggy-free.link
+   https://rqklo-185-189-45-206.free.pinggy.net
+  📱 Admin:   https://kvzpt-185-189-45-206.run.pinggy-free.link/admin/
+  📱 Player:  https://kvzpt-185-189-45-206.run.pinggy-free.link/join/КОД   ← на iPhone
+  🖥 Screen:  https://kvzpt-185-189-45-206.run.pinggy-free.link/screen/?room=КОД
+DONE

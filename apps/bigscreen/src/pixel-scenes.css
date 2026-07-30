@@ -1,0 +1,415 @@
+/* ═══ 8-bit пейзажи трасс (Dendy / NES) ═══ */
+
+.pixel-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scene-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--scene-sky-top) 0%, var(--scene-sky-top) 40%, var(--scene-sky-bottom) 65%, var(--scene-ground) 65%);
+}
+
+/* ── Dubai ── */
+.scene-star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--scene-window-lit);
+}
+
+.scene-moon {
+  position: absolute;
+  top: 6%;
+  right: 10%;
+  width: 28px;
+  height: 28px;
+  background: #fcfcfc;
+  box-shadow: -8px 0 0 var(--scene-sky-bottom);
+}
+
+.scene-dubai-buildings {
+  position: absolute;
+  bottom: 35%;
+  left: 0;
+  right: 0;
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dubai-tower {
+  background: var(--scene-building);
+  position: relative;
+}
+
+.dubai-t1 { width: 36px; height: 70px; }
+.dubai-t2 { width: 28px; height: 90px; }
+.dubai-t3 { width: 40px; height: 55px; }
+.dubai-t4 { width: 32px; height: 75px; }
+
+.dubai-burj {
+  width: 20px;
+  height: 120px;
+  background: var(--scene-building-alt);
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+.dubai-tower::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--scene-window);
+  top: 20%;
+  left: 30%;
+  box-shadow: 10px 8px 0 var(--scene-window), 5px 24px 0 var(--scene-window-lit);
+}
+
+.scene-palm {
+  position: absolute;
+  bottom: 34%;
+  width: 8px;
+  height: 40px;
+  background: #007800;
+}
+
+.scene-palm::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 32px;
+  height: 16px;
+  background: #00a800;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.scene-palm-l { left: 8%; }
+.scene-palm-r { right: 12%; }
+
+.scene-desert {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--scene-ground) 0px,
+    var(--scene-ground) 48px,
+    #d82800 48px,
+    #d82800 96px
+  );
+}
+
+/* ── Murmansk ── */
+.scene-sky-murmansk {
+  background: linear-gradient(180deg, var(--scene-sky-top) 0%, var(--scene-sky-bottom) 55%, var(--scene-snow) 55%);
+}
+
+.scene-aurora {
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  right: 10%;
+  height: 60px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(168, 232, 252, 0.5) 20%,
+    rgba(0, 168, 0, 0.35) 50%,
+    rgba(168, 232, 252, 0.4) 80%,
+    transparent
+  );
+  animation: aurora-shift 6s ease-in-out infinite alternate;
+  filter: blur(2px);
+}
+
+@keyframes aurora-shift {
+  0% { transform: translateX(-5%) skewX(-5deg); opacity: 0.6; }
+  100% { transform: translateX(5%) skewX(5deg); opacity: 1; }
+}
+
+.scene-snowfall {
+  position: absolute;
+  inset: 0;
+}
+
+.snowflake {
+  position: absolute;
+  top: -8px;
+  width: 4px;
+  height: 4px;
+  background: var(--scene-snow);
+  animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+  0% { transform: translateY(-10px); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0.3; }
+}
+
+.scene-murmansk-row {
+  position: absolute;
+  bottom: 28%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+}
+
+.khrushchyovka {
+  width: 56px;
+  position: relative;
+}
+
+.khr-roof {
+  height: 8px;
+  background: var(--scene-snow);
+  border: 2px solid var(--scene-building-alt);
+}
+
+.khr-floors {
+  background: var(--scene-building);
+  border: 2px solid var(--scene-building-alt);
+  border-top: none;
+  padding: 2px;
+}
+
+.khr-floor {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.khr-window {
+  flex: 1;
+  height: 8px;
+  background: var(--scene-window);
+}
+
+.khr-window.lit {
+  background: var(--scene-window-lit);
+  animation: window-blink 3s steps(2) infinite;
+}
+
+@keyframes window-blink {
+  0%, 70% { opacity: 1; }
+  71%, 100% { opacity: 0.4; }
+}
+
+.scene-snow-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28%;
+  background: var(--scene-snow);
+  border-top: 4px solid #c8d0d8;
+}
+
+/* ── Monaco ── */
+.scene-sky-monaco {
+  background: linear-gradient(180deg, var(--scene-sky-top) 0%, var(--scene-sky-bottom) 50%, var(--scene-water) 50%);
+}
+
+.scene-sun {
+  position: absolute;
+  top: 8%;
+  right: 15%;
+  width: 32px;
+  height: 32px;
+  background: #fc9838;
+  box-shadow: 0 0 0 4px #fc9838;
+}
+
+.scene-monaco-cliff {
+  position: absolute;
+  bottom: 45%;
+  left: 0;
+  width: 35%;
+  height: 120px;
+  background: var(--scene-building);
+  clip-path: polygon(0 100%, 100% 100%, 80% 0, 0 20%);
+}
+
+.scene-monaco-buildings {
+  position: absolute;
+  bottom: 42%;
+  right: 5%;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.monaco-house {
+  background: var(--scene-building);
+  border: 2px solid var(--scene-building-alt);
+}
+
+.mh1 { width: 40px; height: 50px; }
+.mh2 { width: 32px; height: 65px; background: var(--scene-building-alt); }
+.mh3 { width: 48px; height: 45px; }
+
+.scene-sea {
+  position: absolute;
+  bottom: 18%;
+  left: 0;
+  right: 0;
+  height: 32%;
+  background: var(--scene-water);
+}
+
+.sea-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(252, 252, 252, 0.3);
+  animation: wave-move 2s linear infinite;
+}
+
+.wave-1 { top: 30%; }
+.wave-2 { top: 60%; animation-delay: 1s; }
+
+@keyframes wave-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-48px); }
+}
+
+.scene-yachts {
+  position: absolute;
+  bottom: 38%;
+  left: 20%;
+  right: 20%;
+}
+
+.yacht {
+  position: absolute;
+  width: 24px;
+  height: 12px;
+  background: #fcfcfc;
+  border-bottom: 4px solid var(--scene-building-alt);
+}
+
+.yacht::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 8px;
+  width: 2px;
+  height: 16px;
+  background: #787878;
+}
+
+.y1 { left: 10%; animation: yacht-bob 3s ease-in-out infinite; }
+.y2 { right: 15%; animation: yacht-bob 3s ease-in-out infinite 1.5s; }
+
+@keyframes yacht-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.scene-promenade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: var(--scene-ground);
+  border-top: 4px solid #787878;
+}
+
+/* ── Tokyo ── */
+.scene-sky-tokyo {
+  background: linear-gradient(180deg, var(--scene-sky-top) 0%, var(--scene-sky-bottom) 60%, var(--scene-ground) 60%);
+}
+
+.scene-rain {
+  position: absolute;
+  inset: 0;
+}
+
+.rain-drop {
+  position: absolute;
+  top: -12px;
+  width: 2px;
+  height: 12px;
+  background: rgba(168, 168, 252, 0.5);
+  animation: rainfall linear infinite;
+}
+
+@keyframes rainfall {
+  0% { transform: translateY(-12px); }
+  100% { transform: translateY(100vh); }
+}
+
+.scene-tokyo-buildings {
+  position: absolute;
+  bottom: 22%;
+  left: 0;
+  right: 0;
+  height: 140px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tokyo-bld {
+  background: var(--scene-building);
+  border: 2px solid var(--scene-building-alt);
+  position: relative;
+}
+
+.tb1 { width: 48px; height: 100px; }
+.tb2 { width: 56px; height: 130px; }
+.tb3 { width: 40px; height: 80px; }
+.tb4 { width: 36px; height: 110px; }
+
+.neon-sign {
+  position: absolute;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  white-space: nowrap;
+  padding: 2px 4px;
+  animation: neon-flicker 2s steps(2) infinite;
+}
+
+.neon-pink { color: #ff006e; top: 15%; left: 4px; text-shadow: 0 0 4px #ff006e; }
+.neon-cyan { color: #00d4ff; top: 20%; left: 2px; font-size: 5px; text-shadow: 0 0 4px #00d4ff; }
+.neon-yellow { color: #fc9838; top: 25%; left: 4px; text-shadow: 0 0 4px #fc9838; }
+
+@keyframes neon-flicker {
+  0%, 85% { opacity: 1; }
+  86%, 88% { opacity: 0.3; }
+  89%, 100% { opacity: 1; }
+}
+
+.tokyo-bld::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--scene-window-lit);
+  box-shadow: 8px 6px 0 var(--scene-window), 16px 12px 0 var(--scene-window-lit);
+}
+
+.scene-tokyo-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: var(--scene-ground);
+  border-top: 2px solid var(--scene-accent);
+}

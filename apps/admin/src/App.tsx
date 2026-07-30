@@ -5,8 +5,11 @@ import {
   CITIES,
   CARS,
   DEFAULT_AVAILABLE_CARS,
+  MAX_PLAYER_OPTIONS,
+  BRAND,
   type Room,
   type Player,
+  type MaxPlayers,
 } from '@decibel-racing/shared';
 import { getSocket, getJoinUrl, getServerUrl, resolveBigScreenUrl } from './lib/socket';
 import './App.css';
@@ -16,7 +19,7 @@ type Step = 'create' | 'lobby';
 function App() {
   const [step, setStep] = useState<Step>('create');
   const [room, setRoom] = useState<Room | null>(null);
-  const [maxPlayers, setMaxPlayers] = useState<2 | 4>(4);
+  const [maxPlayers, setMaxPlayers] = useState<MaxPlayers>(4);
   const [selectedCity, setSelectedCity] = useState(CITIES[0].id);
   const [selectedCars, setSelectedCars] = useState<string[]>([...DEFAULT_AVAILABLE_CARS]);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -114,28 +117,33 @@ function App() {
     socket.emit(SOCKET_EVENTS.ADMIN_NEW_GAME, { roomId: room.id });
   };
 
-  const allReady = room?.players.every((p) => p.carId) && (room?.players.length ?? 0) >= 2;
+  const allReady =
+    room?.players.every((p) => p.carId) &&
+    (room?.players.length ?? 0) >= 1 &&
+    (room?.players.length ?? 0) <= (room?.maxPlayers ?? 10);
 
   if (step === 'create') {
     return (
       <div className="admin">
         <header className="admin-header">
-          <h1>🏎️ Decibel Racing</h1>
-          <p>Панель ведущего</p>
+          <div className="brand-logo">{BRAND.emoji}</div>
+          <h1>{BRAND.name}</h1>
+          <p>{BRAND.tagline} · Панель ведущего</p>
         </header>
 
-        {error && <div className="section" style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>{error}</div>}
+        {error && <div className="section section-error">{error}</div>}
 
         <section className="section">
           <h2 className="section-title">Количество игроков</h2>
-          <div className="radio-group">
-            {([2, 4] as const).map((n) => (
+          <div className="radio-group radio-group-players">
+            {MAX_PLAYER_OPTIONS.map((n) => (
               <div
                 key={n}
                 className={`radio-option ${maxPlayers === n ? 'selected' : ''}`}
                 onClick={() => setMaxPlayers(n)}
               >
-                {n} игрока
+                <span className="radio-num">{n}</span>
+                <span className="radio-label">игроков</span>
               </div>
             ))}
           </div>
@@ -147,32 +155,28 @@ function App() {
             {CITIES.map((city) => (
               <div
                 key={city.id}
-                className={`card ${selectedCity === city.id ? 'selected' : ''}`}
+                className={`card card-dendy ${selectedCity === city.id ? 'selected' : ''}`}
                 onClick={() => setSelectedCity(city.id)}
               >
-                <div
-                  className="card-preview"
-                  style={{ background: `linear-gradient(135deg, ${city.gradient[0]}, ${city.gradient[1]})` }}
-                />
+                <div className={`card-preview admin-scene-preview pixel-scene-${city.scene}`} />
                 <strong>{city.name}</strong>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                  {city.description}
-                </p>
+                <p className="card-desc">{city.description}</p>
+                <span className="card-badge">8-BIT</span>
               </div>
             ))}
           </div>
         </section>
 
         <section className="section">
-          <h2 className="section-title">Доступные машины</h2>
-          <div className="card-grid">
+          <h2 className="section-title">Доступные машины ({selectedCars.length})</h2>
+          <div className="card-grid card-grid-cars">
             {CARS.map((car) => (
               <div
                 key={car.id}
-                className={`card ${selectedCars.includes(car.id) ? 'selected' : ''}`}
+                className={`card card-car ${selectedCars.includes(car.id) ? 'selected' : ''}`}
                 onClick={() => toggleCar(car.id)}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{car.emoji}</div>
+                <div className="car-emoji" style={{ color: car.color }}>{car.emoji}</div>
                 <strong>{car.name}</strong>
               </div>
             ))}
@@ -190,30 +194,29 @@ function App() {
 
   return (
     <div className="admin">
-      <header className="admin-header">
-        <h1>🏎️ Decibel Racing</h1>
-        <span className={`status-badge status-${room?.status}`}>{room?.status}</span>
+      <header className="admin-header admin-header-compact">
+        <div className="admin-header-row">
+          <h1>{BRAND.emoji} {BRAND.name}</h1>
+          <span className={`status-badge status-${room?.status}`}>{room?.status}</span>
+        </div>
       </header>
 
       {error && (
-        <div className="section" style={{ borderColor: 'var(--danger)', color: 'var(--danger)', marginBottom: '1rem' }}>
+        <div className="section section-error">
           {error}
-          <button className="btn btn-secondary" style={{ marginLeft: '1rem', padding: '0.5rem 1rem' }} onClick={() => setError(null)}>
-            ✕
-          </button>
+          <button className="btn btn-secondary btn-sm" onClick={() => setError(null)}>✕</button>
         </div>
       )}
 
       <section className="section qr-section">
         <div className="room-code">{room?.id}</div>
         <div className="qr-wrapper">
-          {room && <QRCodeSVG value={getJoinUrl(room.id)} size={200} />}
+          {room && <QRCodeSVG value={getJoinUrl(room.id)} size={200} fgColor="#2D1B4E" />}
         </div>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Отсканируйте QR или введите код на телефоне
-        </p>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          Big Screen: <a href={room ? resolveBigScreenUrl(room.id) : '#'} target="_blank" rel="noreferrer">
+        <p className="hint">Отсканируйте QR или введите код на телефоне</p>
+        <p className="hint hint-sm">
+          Big Screen:{' '}
+          <a href={room ? resolveBigScreenUrl(room.id) : '#'} target="_blank" rel="noreferrer">
             {room ? resolveBigScreenUrl(room.id) : ''}
           </a>
         </p>
@@ -245,7 +248,7 @@ function App() {
           ) : (
             <>
               <p>📁 Перетащите логотип сюда</p>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>PNG, JPG, SVG до 2 МБ</p>
+              <p className="hint hint-sm">PNG, JPG, SVG до 2 МБ</p>
             </>
           )}
         </div>
@@ -271,9 +274,7 @@ function App() {
             );
           })}
           {room?.players.length === 0 && (
-            <li style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>
-              Ожидаем игроков...
-            </li>
+            <li className="lobby-empty">Ожидаем игроков...</li>
           )}
         </ul>
       </section>

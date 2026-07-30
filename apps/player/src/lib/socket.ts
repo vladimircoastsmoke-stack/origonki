@@ -8,11 +8,18 @@ let socket: Socket | null = null;
 export function getSocket(): Socket {
   if (!socket) {
     socket = io(SERVER_URL, {
-      transports: ['websocket', 'polling'],
+      // polling надёжнее через HTTPS-туннели (Pinggy, ngrok)
+      transports: ['polling', 'websocket'],
+      upgrade: true,
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 20,
       reconnectionDelay: 1000,
+      timeout: 20000,
     });
   }
   return socket;
+}
+
+export function isSocketConnected(): boolean {
+  return getSocket().connected;
 }

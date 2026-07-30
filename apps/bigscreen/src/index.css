@@ -1,18 +1,19 @@
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-card: #1a1a28;
-  --accent: #00d4ff;
-  --accent-glow: rgba(0, 212, 255, 0.3);
-  --accent-secondary: #ff006e;
-  --text-primary: #ffffff;
-  --text-secondary: #8888aa;
-  --success: #00ff88;
-  --warning: #ffaa00;
-  --danger: #ff3366;
-  --border: #2a2a40;
-  --font-display: 'Orbitron', 'Segoe UI', sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --bg-primary: #0c0c44;
+  --bg-card: #1c1c6e;
+  --accent: #fc9838;
+  --accent-glow: rgba(252, 152, 56, 0.4);
+  --text-primary: #fcfcfc;
+  --text-secondary: #a8a8fc;
+  --success: #00a800;
+  --danger: #d82800;
+  --border: #585858;
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'Press Start 2P', monospace;
+  --dendy-sky: #5c94fc;
+  --dendy-ground: #fc9838;
+  --dendy-dark: #0c0c44;
+  --dendy-building: #1c1c6e;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,7 +22,8 @@ body {
   font-family: var(--font-body);
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  image-rendering: pixelated;
 }
+
+button { font-family: inherit; cursor: pointer; border: none; }

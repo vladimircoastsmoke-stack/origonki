@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import {
   SOCKET_EVENTS,
   GAME_CONFIG,
+  type MaxPlayers,
 } from '@decibel-racing/shared';
 import {
   createRoom,
@@ -18,6 +19,7 @@ import {
   rejoinPlayer,
   selectCar,
   updateVolume,
+  findRoomIdByPersistedId,
   setRoomLogo,
   setRoomCity,
   setRoomCars,
@@ -112,7 +114,7 @@ function emitCountdownTick(roomId: string): void {
 }
 
 io.on('connection', (socket) => {
-  socket.on(SOCKET_EVENTS.ADMIN_CREATE_ROOM, (data: { maxPlayers: 2 | 4; city: string }, cb) => {
+  socket.on(SOCKET_EVENTS.ADMIN_CREATE_ROOM, (data: { maxPlayers: MaxPlayers; city: string }, cb) => {
     try {
       const room = createRoom(data.maxPlayers, data.city);
       socket.join(room.id);
@@ -250,8 +252,16 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on(SOCKET_EVENTS.PLAYER_VOLUME, (data: { value: number }) => {
-    const roomId = socketRooms.get(socket.id);
+  socket.on(SOCKET_EVENTS.PLAYER_VOLUME, (data: { value: number; persistedId?: string }) => {
+    let roomId = socketRooms.get(socket.id);
+    if (!roomId && data.persistedId) {
+      roomId = findRoomIdByPersistedId(data.persistedId);
+      if (roomId) {
+        rejoinPlayer(roomId, socket.id, data.persistedId);
+        socket.join(roomId);
+        socketRooms.set(socket.id, roomId);
+      }
+    }
     if (!roomId) return;
     updateVolume(roomId, socket.id, data.value);
   });
@@ -291,7 +301,7 @@ if (isProduction) {
 
 const PORT = Number(process.env.PORT) || 3001;
 httpServer.listen({ port: PORT, host: '0.0.0.0' }, () => {
-  console.log(`🏎️  Decibel Racing server running on port ${PORT}`);
+  console.log(`🏁  ОриГонки server running on port ${PORT}`);
 });
 
 export { io, app, httpServer };

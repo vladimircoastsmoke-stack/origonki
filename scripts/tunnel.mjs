@@ -13,48 +13,84 @@ export function getLocalIp() {
 export function killPort(port) {
   try {
     const pid = execSync(`lsof -ti :${port} 2>/dev/null`, { encoding: 'utf8' }).trim();
-    if (pid) {
-      execSync(`kill ${pid.split('\n').join(' ')} 2>/dev/null`);
-    }
+    if (pid) execSync(`kill ${pid.split('\n').join(' ')} 2>/dev/null`);
   } catch { /* ok */ }
 }
 
-function spawnTunnel(name, cmd, args, urlPattern, timeoutMs = 90000) {
+/** Из текста SSH-вывода достать URL туннеля */
+function extractTunnelUrl(text) {
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('https://')) continue;
+    if (trimmed.includes('dashboard.pinggy') || trimmed.includes('openssh.com')) continue;
+
+    if (/pinggy\.(net|link|io)|pinggy-free\.link|localhost\.run|lhr\.life/.test(trimmed)) {
+      const m = trimmed.match(/https:\/\/[^\s]+/);
+      if (m) return m[0].replace(/[^\w:/.?=&%-]+$/, '');
+    }
+  }
+  return null;
+}
+
+function spawnTunnel(name, cmd, args, timeoutMs = 90000) {
   return new Promise((resolve, reject) => {
     console.log(`   → ${name}...`);
+    let buffer = '';
+    let settled = false;
     const proc = spawn(cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] });
-    let foundUrl = null;
 
     const timer = setTimeout(() => {
-      if (!foundUrl) {
+      if (!settled) {
+        settled = true;
         proc.kill();
-        reject(new Error(`${name}: timeout`));
+        reject(new Error(`${name}: timeout (подождите и попробуйте снова)`));
       }
     }, timeoutMs);
 
-    function onData(data) {
-      const text = data.toString();
-      if (process.env.TUNNEL_DEBUG) process.stdout.write(text);
-      if (foundUrl) return;
-      const match = text.match(urlPattern);
-      if (match) {
-        foundUrl = match[0].replace(/[^\w:/.?=&%-]/g, '');
+    function tryResolve() {
+      if (settled) return;
+      const url = extractTunnelUrl(buffer);
+      if (url) {
+        settled = true;
         clearTimeout(timer);
-        console.log(`   ✓ ${name} OK\n`);
-        resolve({ url: foundUrl, close: () => proc.kill() });
+        console.log(`\n   ✓ ${name} OK\n`);
+        resolve({ url, close: () => proc.kill() });
       }
+    }
+
+    function onData(data) {
+      const chunk = data.toString();
+      buffer += chunk;
+      for (const line of chunk.split(/\r?\n/)) {
+        if (
+          line.includes('pinggy') ||
+          line.includes('localhost.run') ||
+          line.includes('lhr.life') ||
+          line.includes('https://')
+        ) {
+          console.log('  ', line.trim());
+        }
+      }
+      tryResolve();
     }
 
     proc.stdout.on('data', onData);
     proc.stderr.on('data', onData);
     proc.on('error', (err) => {
-      clearTimeout(timer);
-      reject(err);
+      if (!settled) {
+        settled = true;
+        clearTimeout(timer);
+        reject(err);
+      }
     });
     proc.on('close', (code) => {
-      if (!foundUrl) {
+      if (settled) return;
+      tryResolve();
+      if (!settled) {
+        settled = true;
         clearTimeout(timer);
-        reject(new Error(`${name}: closed (${code})`));
+        reject(new Error(`${name}: нет URL (код ${code})`));
       }
     });
   });
@@ -68,11 +104,12 @@ const PROVIDERS = [
       '-p', '443',
       '-R0:localhost:3001',
       '-o', 'StrictHostKeyChecking=no',
+      '-o', 'UserKnownHostsFile=/dev/null',
       '-o', 'ServerAliveInterval=30',
-      '-o', 'ConnectTimeout=20',
-      'a.pinggy.io',
+      '-o', 'ConnectTimeout=25',
+      '-o', 'LogLevel=ERROR',
+      'free@a.pinggy.io',
     ],
-    pattern: /https:\/\/[^\s]+/,
   },
   {
     name: 'localhost.run (HTTPS)',
@@ -80,11 +117,12 @@ const PROVIDERS = [
     args: [
       '-R', '80:localhost:3001',
       '-o', 'StrictHostKeyChecking=no',
+      '-o', 'UserKnownHostsFile=/dev/null',
       '-o', 'ServerAliveInterval=30',
-      '-o', 'ConnectTimeout=20',
+      '-o', 'ConnectTimeout=25',
+      '-o', 'LogLevel=ERROR',
       'nokey@localhost.run',
     ],
-    pattern: /https:\/\/[^\s]+\.localhost\.run/,
   },
 ];
 
@@ -100,29 +138,26 @@ export async function tryNgrok(port, authtoken) {
   } catch (err) {
     const msg = String(err.message || err);
     if (msg.includes('9040') || msg.includes('IP address')) {
-      console.log('   ✗ ngrok заблокирован для вашего IP (Россия/VPN)\n');
+      console.log('   ✗ ngrok заблокирован для вашего IP\n');
     } else {
-      console.log(`   ✗ ngrok: ${msg.slice(0, 80)}\n`);
+      console.log(`   ✗ ngrok: ${msg.slice(0, 100)}\n`);
     }
     return null;
   }
 }
 
 export async function createHttpsTunnel(port = 3001, ngrokToken) {
-  console.log('🌐 Ищу HTTPS-туннель для iPhone...\n');
+  console.log('🌐 Создаю HTTPS-туннель (1–2 минуты)...\n');
 
   for (const p of PROVIDERS) {
     try {
-      return await spawnTunnel(p.name, p.cmd, p.args, p.pattern);
-    } catch {
-      console.log(`   ✗ ${p.name} не сработал\n`);
+      return await spawnTunnel(p.name, p.cmd, p.args);
+    } catch (e) {
+      console.log(`   ✗ ${e.message}\n`);
     }
   }
 
-  const ngrok = await tryNgrok(port, ngrokToken);
-  if (ngrok) return ngrok;
-
-  return null;
+  return tryNgrok(port, ngrokToken);
 }
 
 export function printIphoneUrls(base, localIp) {
@@ -143,14 +178,7 @@ export function printIphoneUrls(base, localIp) {
 
 export function printFailureHelp(localIp) {
   console.log('\n❌ HTTPS-туннель не получился.\n');
-  console.log('════════════════════════════════════════════════════════');
-  console.log('  Варианты:');
-  console.log('════════════════════════════════════════════════════════');
-  if (localIp) {
-    console.log(`  1. Wi-Fi (Android): bash 4-ТЕСТ-В-WIFI.command`);
-    console.log(`     http://${localIp}:3001/admin/\n`);
-  }
-  console.log('  2. Постоянный HTTPS (лучше для iPhone):');
-  console.log('     bash 2-ДЕПЛОЙ-НА-RENDER.command\n');
-  console.log('  3. VPN на другую страну + bash 5-ТЕСТ-НА-IPHONE.sh\n');
+  console.log('  1. Wi-Fi (Android):  bash 4-ТЕСТ-В-WIFI.command');
+  if (localIp) console.log(`     http://${localIp}:3001/admin/\n`);
+  console.log('  2. iPhone (надёжно): bash 2-ДЕПЛОЙ-НА-RENDER.command\n');
 }

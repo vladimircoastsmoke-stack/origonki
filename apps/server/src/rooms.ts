@@ -1,4 +1,4 @@
-import type { Player, Room } from '@decibel-racing/shared';
+import type { Player, Room, MaxPlayers } from '@decibel-racing/shared';
 import {
   GAME_CONFIG,
   DEFAULT_AVAILABLE_CARS,
@@ -27,7 +27,7 @@ export function getRoomCount(): number {
   return rooms.size;
 }
 
-export function createRoom(maxPlayers: 2 | 4, city: string): Room {
+export function createRoom(maxPlayers: MaxPlayers, city: string): Room {
   if (rooms.size >= GAME_CONFIG.MAX_ROOMS) {
     throw new Error('Достигнут лимит одновременных комнат');
   }
@@ -187,7 +187,10 @@ export function setRoomCars(roomId: string, carIds: string[]): void {
 export function startCountdown(roomId: string): void {
   const room = rooms.get(roomId);
   if (!room) throw new Error('Комната не найдена');
-  if (room.players.length < 2) throw new Error('Нужно минимум 2 игрока');
+  const minPlayers = process.env.ALLOW_SOLO === '1' ? 1 : 2;
+  if (room.players.length < minPlayers) {
+    throw new Error(`Нужно минимум ${minPlayers} игрок${minPlayers === 1 ? '' : 'а'}`);
+  }
   if (room.players.some((p) => !p.carId)) throw new Error('Не все игроки выбрали машину');
 
   room.status = 'countdown';
@@ -306,6 +309,15 @@ export function removePlayer(roomId: string, socketId: string): void {
   const room = rooms.get(roomId);
   if (!room) return;
   room.players = room.players.filter((p) => p.id !== socketId);
+}
+
+export function findRoomIdByPersistedId(persistedId: string): string | undefined {
+  for (const [id, room] of rooms) {
+    if (room.players.some((p) => p.persistedId === persistedId)) {
+      return id;
+    }
+  }
+  return undefined;
 }
 
 export function getRaceResultsForRoom(roomId: string) {
