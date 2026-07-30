@@ -18,16 +18,18 @@
 
 .admin-header h1 {
   font-family: var(--font-display);
-  font-size: 3rem;
+  font-size: 1.4rem;
   color: var(--accent);
   text-shadow: 3px 3px 0 var(--border), 0 0 30px var(--accent-glow);
-  margin-bottom: 0.5rem;
-  letter-spacing: 2px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
+  line-height: 1.6;
 }
 
 .admin-header p {
   color: var(--text-secondary);
-  font-size: 1.05rem;
+  font-size: 0.55rem;
+  line-height: 1.8;
 }
 
 .admin-header-compact {
@@ -43,7 +45,7 @@
 }
 
 .admin-header-row h1 {
-  font-size: 2rem;
+  font-size: 1rem;
   margin: 0;
 }
 
@@ -67,11 +69,12 @@
 
 .section-title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.6rem;
   color: var(--accent-secondary);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 1px;
+  line-height: 1.8;
 }
 
 .card-grid {
@@ -107,11 +110,17 @@
   box-shadow: 4px 4px 0 var(--accent);
 }
 
+.card strong {
+  font-size: 0.5rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
 .card-desc {
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: 0.45rem;
   margin-top: 0.5rem;
-  line-height: 1.4;
+  line-height: 1.7;
 }
 
 .card-badge {
@@ -207,7 +216,8 @@
 .card-car-showcase strong {
   display: block;
   margin-top: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.45rem;
+  line-height: 1.6;
 }
 
 .card-grid-cars-readonly .card-car {
@@ -217,9 +227,10 @@
 .card-action {
   display: block;
   margin-top: 0.75rem;
-  font-size: 0.8rem;
+  font-size: 0.4rem;
   color: var(--accent-secondary);
-  font-weight: 700;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 .section-hint {
@@ -281,19 +292,20 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 1rem 2rem;
+  padding: 0.9rem 1.2rem;
   border-radius: var(--radius);
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.55rem;
+  font-weight: 400;
   transition: transform 0.15s, box-shadow 0.15s;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   border: 3px solid var(--border);
+  line-height: 1.6;
 }
 
 .btn-sm {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.45rem;
 }
 
 .btn-primary {
@@ -361,15 +373,16 @@
 .radio-num {
   display: block;
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: 0.9rem;
   color: var(--accent);
 }
 
 .radio-label {
-  font-size: 0.75rem;
+  font-size: 0.4rem;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
+  line-height: 1.6;
 }
 
 .radio-option.selected {
@@ -388,10 +401,11 @@
 
 .room-code {
   font-family: var(--font-display);
-  font-size: 3rem;
-  letter-spacing: 8px;
+  font-size: 1.6rem;
+  letter-spacing: 4px;
   color: var(--accent-secondary);
   text-shadow: 2px 2px 0 var(--border);
+  line-height: 1.6;
 }
 
 .qr-wrapper {
@@ -404,10 +418,13 @@
 
 .hint {
   color: var(--text-secondary);
+  font-size: 0.45rem;
+  line-height: 1.8;
 }
 
 .hint-sm {
-  font-size: 0.85rem;
+  font-size: 0.45rem;
+  line-height: 1.8;
 }
 
 .lobby-list {
@@ -435,8 +452,9 @@
 }
 
 .lobby-item-name {
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-weight: 400;
+  font-size: 0.55rem;
+  line-height: 1.6;
 }
 
 .lobby-item-car {
@@ -445,13 +463,13 @@
 
 .lobby-item-ready {
   color: var(--success);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.45rem;
+  font-weight: 400;
 }
 
 .lobby-item-waiting {
   color: var(--warning);
-  font-size: 0.85rem;
+  font-size: 0.45rem;
 }
 
 .dropzone {
@@ -491,8 +509,14 @@
   color: var(--accent-secondary);
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
+  font-size: 0.45rem;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+.results-table td {
+  font-size: 0.45rem;
+  line-height: 1.6;
 }
 
 .place-1 { color: #ffd93d; font-weight: 700; }
@@ -501,13 +525,14 @@
 
 .status-badge {
   display: inline-block;
-  padding: 0.3rem 0.85rem;
+  padding: 0.35rem 0.6rem;
   border-radius: var(--radius);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.4rem;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   border: 2px solid;
+  line-height: 1.4;
 }
 
 .status-lobby { background: rgba(255, 107, 44, 0.15); color: var(--accent); border-color: var(--accent); }
@@ -521,14 +546,15 @@
   right: 1rem;
   z-index: 100;
   font-family: var(--font-display);
-  font-size: 0.85rem;
-  padding: 0.6rem 1rem;
+  font-size: 0.45rem;
+  padding: 0.6rem 0.9rem;
   background: var(--accent);
   color: #fff;
   border: 2px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 4px 0 var(--border);
   cursor: pointer;
+  line-height: 1.6;
 }
 
 .audio-unlock-hint:hover {
@@ -554,7 +580,7 @@
   color: var(--text-secondary);
   border: 2px solid var(--border);
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.45rem;
 }
 
 .btn-back:hover {
@@ -603,10 +629,10 @@
 }
 
 .game-intro-essence {
-  font-size: 1.05rem;
+  font-size: 0.5rem;
   color: var(--text-primary);
   margin-bottom: 1rem;
-  line-height: 1.5;
+  line-height: 1.8;
 }
 
 .game-intro-steps {
@@ -622,9 +648,9 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  font-size: 0.95rem;
+  font-size: 0.45rem;
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: 1.7;
 }
 
 .game-intro-step-num {

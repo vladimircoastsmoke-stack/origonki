@@ -24,6 +24,9 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   image-rendering: pixelated;
+  line-height: 1.75;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button { font-family: inherit; cursor: pointer; border: none; }

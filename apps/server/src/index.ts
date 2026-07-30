@@ -211,21 +211,29 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on(SOCKET_EVENTS.ADMIN_RESTART_RACE, (data: { roomId: string }) => {
+  socket.on(SOCKET_EVENTS.ADMIN_RESTART_RACE, (data: { roomId: string }, cb) => {
     try {
       restartRace(data.roomId);
       broadcastRoomUpdate(data.roomId);
+      const room = getRoom(data.roomId);
+      cb?.({ room: room ? serializeRoom(room) : undefined });
     } catch (err) {
-      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+      const message = (err as Error).message;
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message });
+      cb?.({ error: message });
     }
   });
 
-  socket.on(SOCKET_EVENTS.ADMIN_NEW_GAME, (data: { roomId: string }) => {
+  socket.on(SOCKET_EVENTS.ADMIN_NEW_GAME, (data: { roomId: string }, cb) => {
     try {
       newGame(data.roomId);
       broadcastRoomUpdate(data.roomId);
+      const room = getRoom(data.roomId);
+      cb?.({ room: room ? serializeRoom(room) : undefined });
     } catch (err) {
-      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+      const message = (err as Error).message;
+      socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message });
+      cb?.({ error: message });
     }
   });
 

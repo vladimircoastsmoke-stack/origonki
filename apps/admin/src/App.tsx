@@ -70,6 +70,9 @@ function App() {
         setRoom(updatedRoom);
         setMaxPlayers(updatedRoom.maxPlayers);
         setSelectedCity(asCitySceneId(updatedRoom.city));
+        if (updatedRoom.status === 'lobby') {
+          setResults([]);
+        }
       }
     });
 
@@ -87,6 +90,28 @@ function App() {
       socket.off(SOCKET_EVENTS.SERVER_ERROR);
     };
   }, [socket, room?.id]);
+
+  useEffect(() => {
+    if (!room?.id || step !== 'lobby') return;
+
+    const rejoinAdmin = () => {
+      socket.emit(
+        SOCKET_EVENTS.ADMIN_JOIN_ROOM,
+        { roomId: room.id },
+        (response: { room?: Room; error?: string }) => {
+          if (response.room) setRoom(response.room);
+          if (response.error) setError(response.error);
+        },
+      );
+    };
+
+    socket.on('connect', rejoinAdmin);
+    if (socket.connected) rejoinAdmin();
+
+    return () => {
+      socket.off('connect', rejoinAdmin);
+    };
+  }, [socket, room?.id, step]);
 
   const createRoom = useCallback(() => {
     socket.emit(
@@ -157,14 +182,36 @@ function App() {
 
   const restartRace = () => {
     if (!room) return;
-    setResults([]);
-    socket.emit(SOCKET_EVENTS.ADMIN_RESTART_RACE, { roomId: room.id });
+    setError(null);
+    socket.emit(
+      SOCKET_EVENTS.ADMIN_RESTART_RACE,
+      { roomId: room.id },
+      (response: { room?: Room; error?: string }) => {
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
+        setResults([]);
+        if (response.room) setRoom(response.room);
+      },
+    );
   };
 
   const newGame = () => {
     if (!room) return;
-    setResults([]);
-    socket.emit(SOCKET_EVENTS.ADMIN_NEW_GAME, { roomId: room.id });
+    setError(null);
+    socket.emit(
+      SOCKET_EVENTS.ADMIN_NEW_GAME,
+      { roomId: room.id },
+      (response: { room?: Room; error?: string }) => {
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
+        setResults([]);
+        if (response.room) setRoom(response.room);
+      },
+    );
   };
 
   const allReady =
@@ -173,6 +220,8 @@ function App() {
     (room?.players.length ?? 0) <= (room?.maxPlayers ?? 10);
 
   const canEditLobby = room?.status === 'lobby';
+  const canRestart =
+    room?.status === 'finished' || room?.status === 'racing' || room?.status === 'countdown';
 
   const playersPicker = (onSelect: (n: MaxPlayers) => void, selected: MaxPlayers) => (
     <div className="radio-group radio-group-players">
@@ -445,13 +494,16 @@ function App() {
           <button type="button" className="btn btn-primary" onClick={startCountdown} disabled={!allReady || room?.status !== 'lobby'}>
             🏁 Старт
           </button>
-          <button type="button" className="btn btn-secondary" onClick={restartRace} disabled={room?.status === 'lobby'}>
+          <button type="button" className="btn btn-secondary" onClick={restartRace} disabled={!canRestart}>
             🔄 Рестарт
           </button>
-          <button type="button" className="btn btn-danger" onClick={newGame}>
+          <button type="button" className="btn btn-danger" onClick={newGame} disabled={!room}>
             🆕 Новая игра
           </button>
         </div>
+        {!canRestart && room?.status === 'lobby' && (
+          <p className="hint hint-sm section-hint">Рестарт станет доступен после старта гонки</p>
+        )}
       </section>
 
       {results.length > 0 && (

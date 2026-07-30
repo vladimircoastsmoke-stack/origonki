@@ -17,20 +17,18 @@
 
 .player-title {
   font-family: var(--font-display);
-  font-size: 1.6rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
   color: var(--accent);
   text-shadow: 2px 2px 0 var(--border);
-}
-
-body.theme-dendy .player-title {
-  font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .player-subtitle {
   color: var(--text-secondary);
   margin-bottom: 2rem;
+  font-size: 0.45rem;
+  line-height: 1.8;
 }
 
 .player-input {
@@ -41,13 +39,9 @@ body.theme-dendy .player-title {
   border: 3px solid var(--border);
   border-radius: var(--radius);
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-size: 0.55rem;
   margin-bottom: 1rem;
-}
-
-body.theme-dendy .player-input {
-  font-family: var(--font-display);
-  font-size: 0.65rem;
+  line-height: 1.6;
 }
 
 .player-input:focus {
@@ -57,21 +51,20 @@ body.theme-dendy .player-input {
 .player-btn {
   width: 100%;
   max-width: 320px;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   background: var(--accent);
   color: #1a0f0a;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.55rem;
+  font-weight: 400;
   border-radius: var(--radius);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   border: 3px solid var(--border);
   box-shadow: 4px 4px 0 var(--border);
+  line-height: 1.6;
 }
 
 body.theme-dendy .player-btn {
-  font-family: var(--font-display);
-  font-size: 0.6rem;
   color: var(--dendy-dark);
   box-shadow: 4px 4px 0 var(--dendy-dark);
 }
@@ -83,7 +76,8 @@ body.theme-dendy .player-btn {
 .player-error {
   color: var(--danger);
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.45rem;
+  line-height: 1.7;
 }
 
 .connection-badge {
@@ -93,15 +87,15 @@ body.theme-dendy .player-btn {
   transform: translateX(-50%);
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius);
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.4rem;
+  font-weight: 400;
   z-index: 10;
   border: 2px solid;
+  line-height: 1.5;
 }
 
 body.theme-dendy .connection-badge {
-  font-family: var(--font-display);
-  font-size: 0.45rem;
+  font-size: 0.4rem;
 }
 
 .connection-badge.online {
@@ -187,13 +181,9 @@ body.theme-dendy .status-hint {
 }
 
 .car-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-body.theme-dendy .car-name {
-  font-family: var(--font-display);
-  font-size: 0.5rem;
+  font-size: 0.45rem;
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 .car-taken-label {

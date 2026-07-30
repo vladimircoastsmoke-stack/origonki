@@ -110,6 +110,20 @@ export default function JoinPage() {
           return current;
         });
       }
+
+      if (updatedRoom.status === 'lobby') {
+        setMyPlace(null);
+        setScreen((current) => {
+          const me = updatedRoom.players.find(
+            (p) => p.id === socket.id || (persistedIdRef.current && p.nickname === nickname),
+          );
+          if (!me) return 'nickname';
+          if (current === 'results' || current === 'racing') {
+            return me.carId ? 'waiting' : 'car';
+          }
+          return current;
+        });
+      }
     },
     [socket.id, nickname]
   );

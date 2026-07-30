@@ -9,10 +9,10 @@
   --success: #6bcb77;
   --danger: #e8453c;
   --border: #4a3020;
-  --font-display: 'Russo One', sans-serif;
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'Press Start 2P', monospace;
   --radius: 4px;
 
-  /* Dendy theme overrides */
   --dendy-sky: #5c94fc;
   --dendy-accent: #fc9838;
   --dendy-dark: #0c0c44;
@@ -20,19 +20,29 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  font-size: 10px;
+}
+
 body {
-  font-family: 'Manrope', -apple-system, sans-serif;
+  font-family: var(--font-body);
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   min-height: 100dvh;
+  line-height: 1.75;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
-body.theme-dendy .player-title,
-body[class*='theme-city-'] .player-title {
-  font-family: var(--font-display);
+button { font-family: inherit; cursor: pointer; border: none; }
+
+input {
+  font-family: inherit;
+  outline: none;
+  border: none;
 }
 
 body.theme-city-dubai {
@@ -43,7 +53,6 @@ body.theme-city-dubai {
   --text-primary: #fcfcfc;
   --text-secondary: #a8a8fc;
   --border: #585858;
-  --font-display: 'Press Start 2P', monospace;
 }
 
 body.theme-city-murmansk {
@@ -54,7 +63,6 @@ body.theme-city-murmansk {
   --text-primary: #fcfcfc;
   --text-secondary: #c8d0d8;
   --border: #787878;
-  --font-display: 'Press Start 2P', monospace;
 }
 
 body.theme-city-monaco {
@@ -65,7 +73,6 @@ body.theme-city-monaco {
   --text-primary: #fcfcfc;
   --text-secondary: #a8d8fc;
   --border: #0088d8;
-  --font-display: 'Press Start 2P', monospace;
 }
 
 body.theme-city-tokyo {
@@ -76,13 +83,4 @@ body.theme-city-tokyo {
   --text-primary: #fcfcfc;
   --text-secondary: #c888c8;
   --border: #580858;
-  --font-display: 'Press Start 2P', monospace;
-}
-
-button { font-family: inherit; cursor: pointer; border: none; }
-
-input {
-  font-family: inherit;
-  outline: none;
-  border: none;
 }

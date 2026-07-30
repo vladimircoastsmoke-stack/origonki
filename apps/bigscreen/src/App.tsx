@@ -70,6 +70,10 @@ function App() {
 
     socket.on(SOCKET_EVENTS.SERVER_ROOM_UPDATE, (updatedRoom: Room) => {
       setRoom(updatedRoom);
+      if (updatedRoom.status === 'lobby') {
+        setResults([]);
+        setCountdown(undefined);
+      }
     });
 
     socket.on(SOCKET_EVENTS.SERVER_COUNTDOWN_TICK, (data: { value: number }) => {

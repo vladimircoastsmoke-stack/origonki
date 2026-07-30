@@ -13,14 +13,18 @@
   --danger: #e8453c;
   --border: #4a3020;
   --radius: 4px;
-  --font-display: 'Russo One', 'Arial Black', sans-serif;
-  --font-body: 'Manrope', 'Segoe UI', sans-serif;
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'Press Start 2P', monospace;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  font-size: 10px;
 }
 
 body {
@@ -31,18 +35,19 @@ body {
     radial-gradient(ellipse at 50% 100%, rgba(252, 152, 56, 0.15) 0%, transparent 55%);
   color: var(--text-primary);
   min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  line-height: 1.75;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
-button {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   cursor: pointer;
   border: none;
-  outline: none;
-}
-
-input, select {
-  font-family: inherit;
   outline: none;
 }
 

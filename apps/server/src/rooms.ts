@@ -303,6 +303,7 @@ export function restartRace(roomId: string): void {
   stopCountdown(room);
   room.status = 'lobby';
   room.countdownValue = undefined;
+  room.raceFinishedPending = false;
   room.players.forEach((p) => {
     p.progress = 0;
     p.currentVolume = 0;
