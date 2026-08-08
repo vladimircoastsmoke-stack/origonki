@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { BRAND } from '@decibel-racing/shared';
-import { getServerUrl } from './lib/socket';
+import { getServerUrl } from '../lib/socket';
 
 type AuthState = 'loading' | 'ok' | 'denied';
 
