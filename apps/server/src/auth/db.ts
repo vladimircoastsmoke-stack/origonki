@@ -2,6 +2,8 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
+type SqliteDb = InstanceType<typeof Database>;
+
 const dataDir = process.env.DATA_DIR ?? path.join(process.cwd(), 'data');
 
 if (!fs.existsSync(dataDir)) {
@@ -10,7 +12,7 @@ if (!fs.existsSync(dataDir)) {
 
 const dbPath = path.join(dataDir, 'origonki.db');
 
-export const db = new Database(dbPath);
+export const db: SqliteDb = new Database(dbPath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS organizers (
