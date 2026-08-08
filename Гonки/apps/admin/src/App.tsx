@@ -3,28 +3,22 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   SOCKET_EVENTS,
   CITIES,
+  CARS,
+  DEFAULT_AVAILABLE_CARS,
   MAX_PLAYER_OPTIONS,
   BRAND,
   getCityById,
-  getCarsByCity,
-  getCarById,
   asCitySceneId,
-  openBigScreenRoom,
   type Room,
   type Player,
   type MaxPlayers,
-  type CitySceneId,
 } from '@decibel-racing/shared';
 import { getSocket, getJoinUrl, getServerUrl, resolveBigScreenUrl } from './lib/socket';
 import { useAdminAudio } from './hooks/useAdminAudio';
-import { useCountdownBeep } from './hooks/useCountdownBeep';
-import { GameIntroBox } from './components/GameIntro';
-import { CarSpriteMini } from './components/CarSprite';
-import { AudioControls } from './components/AudioControls';
 import './App.css';
 
 type Step = 'create' | 'lobby';
-type SetupStep = 'location' | 'setup';
+type SetupStep = 'players' | 'location' | 'cars';
 type LobbyEdit = null | 'location' | 'players';
 
 function BackButton({ label, onClick }: { label: string; onClick: () => void }) {
@@ -37,19 +31,18 @@ function BackButton({ label, onClick }: { label: string; onClick: () => void }) 
 
 function App() {
   const [step, setStep] = useState<Step>('create');
-  const [setupStep, setSetupStep] = useState<SetupStep>('location');
+  const [setupStep, setSetupStep] = useState<SetupStep>('players');
   const [lobbyEdit, setLobbyEdit] = useState<LobbyEdit>(null);
   const [room, setRoom] = useState<Room | null>(null);
   const [maxPlayers, setMaxPlayers] = useState<MaxPlayers>(4);
   const [selectedCity, setSelectedCity] = useState<CitySceneId>(CITIES[0].id);
+  const [selectedCars, setSelectedCars] = useState<string[]>([...DEFAULT_AVAILABLE_CARS]);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [results, setResults] = useState<(Player & { place: number })[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [locationTouched, setLocationTouched] = useState(false);
 
   const socket = getSocket();
-  const cityCars = getCarsByCity(selectedCity);
-
   const { needsUnlock, unlock } = useAdminAudio(
     step,
     selectedCity,
@@ -58,19 +51,18 @@ function App() {
     locationTouched,
   );
 
-  useCountdownBeep(socket, room?.city ?? selectedCity, !needsUnlock);
-
-  const audioControls = <AudioControls needsUnlock={needsUnlock} onUnlock={unlock} />;
+  const audioHint = needsUnlock ? (
+    <button type="button" className="audio-unlock-hint" onClick={() => void unlock()}>
+      🔊 Нажмите для музыки
+    </button>
+  ) : null;
 
   useEffect(() => {
     socket.on(SOCKET_EVENTS.SERVER_ROOM_UPDATE, (updatedRoom: Room) => {
       if (room && updatedRoom.id === room.id) {
         setRoom(updatedRoom);
         setMaxPlayers(updatedRoom.maxPlayers);
-        setSelectedCity(asCitySceneId(updatedRoom.city));
-        if (updatedRoom.status === 'lobby') {
-          setResults([]);
-        }
+        setSelectedCity(updatedRoom.city as CitySceneId);
       }
     });
 
@@ -89,74 +81,6 @@ function App() {
     };
   }, [socket, room?.id]);
 
-  useEffect(() => {
-    if (!room?.id || step !== 'lobby') return;
-
-    const rejoinAdmin = () => {
-      socket.emit(
-        SOCKET_EVENTS.ADMIN_JOIN_ROOM,
-        { roomId: room.id },
-        (response: { room?: Room; error?: string }) => {
-          if (response.room) setRoom(response.room);
-          if (response.error) setError(response.error);
-        },
-      );
-    };
-
-    socket.on('connect', rejoinAdmin);
-    if (socket.connected) rejoinAdmin();
-
-    return () => {
-      socket.off('connect', rejoinAdmin);
-    };
-  }, [socket, room?.id, step]);
-
-  const addDemoBot = useCallback(() => {
-    if (!room) return;
-    setError(null);
-    socket.emit(
-      SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT,
-      { roomId: room.id },
-      (response: { room?: Room; error?: string }) => {
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        if (response.room) setRoom(response.room);
-      },
-    );
-  }, [socket, room]);
-
-  const createRoomAndTest = useCallback(() => {
-    socket.emit(
-      SOCKET_EVENTS.ADMIN_CREATE_ROOM,
-      { maxPlayers, city: selectedCity },
-      (response: { roomId?: string; room?: Room; error?: string }) => {
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        if (!response.room) return;
-        const created = response.room;
-        setRoom(created);
-        setStep('lobby');
-        setLobbyEdit(null);
-        socket.emit(
-          SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT,
-          { roomId: created.id },
-          (botResponse: { room?: Room; error?: string }) => {
-            if (botResponse.error) {
-              setError(botResponse.error);
-              return;
-            }
-            if (botResponse.room) setRoom(botResponse.room);
-            openBigScreenRoom(created.id);
-          },
-        );
-      },
-    );
-  }, [socket, maxPlayers, selectedCity]);
-
   const createRoom = useCallback(() => {
     socket.emit(
       SOCKET_EVENTS.ADMIN_CREATE_ROOM,
@@ -168,12 +92,16 @@ function App() {
         }
         if (response.room) {
           setRoom(response.room);
+          socket.emit(SOCKET_EVENTS.ADMIN_SET_CARS, {
+            roomId: response.room.id,
+            carIds: selectedCars,
+          });
           setStep('lobby');
           setLobbyEdit(null);
         }
       },
     );
-  }, [socket, maxPlayers, selectedCity]);
+  }, [socket, maxPlayers, selectedCity, selectedCars]);
 
   const handleLogoUpload = async (file: File) => {
     if (!room) return;
@@ -183,7 +111,6 @@ function App() {
       const res = await fetch(`${getServerUrl()}/api/upload-logo/${room.id}`, {
         method: 'POST',
         body: formData,
-        credentials: 'include',
       });
       const data = await res.json();
       if (data.logoUrl) {
@@ -194,7 +121,17 @@ function App() {
     }
   };
 
-  const applyCityInLobby = (cityId: CitySceneId) => {
+  const toggleCar = (carId: string) => {
+    setSelectedCars((prev) =>
+      prev.includes(carId)
+        ? prev.length > 2
+          ? prev.filter((c) => c !== carId)
+          : prev
+        : [...prev, carId],
+    );
+  };
+
+  const applyCityInLobby = (cityId: string) => {
     if (!room) return;
     setError(null);
     socket.emit(SOCKET_EVENTS.ADMIN_SELECT_CITY, { roomId: room.id, city: cityId });
@@ -227,36 +164,14 @@ function App() {
 
   const restartRace = () => {
     if (!room) return;
-    setError(null);
-    socket.emit(
-      SOCKET_EVENTS.ADMIN_RESTART_RACE,
-      { roomId: room.id },
-      (response: { room?: Room; error?: string }) => {
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        setResults([]);
-        if (response.room) setRoom(response.room);
-      },
-    );
+    setResults([]);
+    socket.emit(SOCKET_EVENTS.ADMIN_RESTART_RACE, { roomId: room.id });
   };
 
   const newGame = () => {
     if (!room) return;
-    setError(null);
-    socket.emit(
-      SOCKET_EVENTS.ADMIN_NEW_GAME,
-      { roomId: room.id },
-      (response: { room?: Room; error?: string }) => {
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        setResults([]);
-        if (response.room) setRoom(response.room);
-      },
-    );
+    setResults([]);
+    socket.emit(SOCKET_EVENTS.ADMIN_NEW_GAME, { roomId: room.id });
   };
 
   const allReady =
@@ -265,8 +180,6 @@ function App() {
     (room?.players.length ?? 0) <= (room?.maxPlayers ?? 10);
 
   const canEditLobby = room?.status === 'lobby';
-  const canRestart =
-    room?.status === 'finished' || room?.status === 'racing' || room?.status === 'countdown';
 
   const playersPicker = (onSelect: (n: MaxPlayers) => void, selected: MaxPlayers) => (
     <div className="radio-group radio-group-players">
@@ -283,109 +196,99 @@ function App() {
     </div>
   );
 
-  const cityPicker = (
-    onSelect: (id: CitySceneId) => void,
-    selected: CitySceneId,
-    pickMode: 'navigate' | 'select' = 'select',
-  ) => (
+  const cityPicker = (onSelect: (id: string) => void, selected: string) => (
     <div className="card-grid">
       {CITIES.map((city) => (
         <div
           key={city.id}
           className={`card card-dendy ${selected === city.id ? 'selected' : ''}`}
           onClick={() => onSelect(city.id)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && onSelect(city.id)}
         >
           <div className={`card-preview admin-scene-preview pixel-scene-${city.scene}`} />
           <strong>{city.name}</strong>
           <p className="card-desc">{city.description}</p>
           <span className="card-badge">8-BIT</span>
-          {pickMode === 'navigate' && <span className="card-action">Выбрать →</span>}
-        </div>
-      ))}
-    </div>
-  );
-
-  const cityCarGrid = (cityId: CitySceneId) => (
-    <div className="card-grid card-grid-cars card-grid-cars-readonly">
-      {getCarsByCity(cityId).map((car) => (
-        <div key={car.id} className="card card-car card-car-showcase">
-          <CarSpriteMini carId={car.id} />
-          <strong>{car.name}</strong>
         </div>
       ))}
     </div>
   );
 
   if (step === 'create') {
-    if (setupStep === 'location') {
-      return (
-        <div className="admin">
-          {audioControls}
-          <header className="admin-header">
-            <div className="brand-logo">{BRAND.emoji}</div>
-            <h1>{BRAND.name}</h1>
-            <p>{BRAND.tagline} · Панель ведущего</p>
-          </header>
-
-          <GameIntroBox variant="compact" />
-
-          {error && <div className="section section-error">{error}</div>}
-
-          <section className="section">
-            <h2 className="section-title">Выберите локацию</h2>
-            {cityPicker((id) => {
-              setSelectedCity(id);
-              setLocationTouched(true);
-              setSetupStep('setup');
-            }, selectedCity, 'navigate')}
-          </section>
-        </div>
-      );
-    }
-
-    const city = getCityById(selectedCity);
     return (
       <div className="admin">
-        {audioControls}
-        <header className="admin-header admin-header-compact">
-          <BackButton
-            label="К выбору локации"
-            onClick={() => {
-              setSetupStep('location');
-              setLocationTouched(false);
-            }}
-          />
-          <h1>{city.name}</h1>
-          <p className="hint">{city.description}</p>
+        {audioHint}
+        <header className="admin-header">
+          <div className="brand-logo">{BRAND.emoji}</div>
+          <h1>{BRAND.name}</h1>
+          <p>{BRAND.tagline} · Панель ведущего</p>
+          <div className="setup-steps">
+            <span className={setupStep === 'players' ? 'active' : ''}>1. Игроки</span>
+            <span className={setupStep === 'location' ? 'active' : ''}>2. Локация</span>
+            <span className={setupStep === 'cars' ? 'active' : ''}>3. Машины</span>
+          </div>
         </header>
 
         {error && <div className="section section-error">{error}</div>}
 
-        <section className="section">
-          <h2 className="section-title">Количество игроков</h2>
-          {playersPicker((n) => setMaxPlayers(n), maxPlayers)}
-        </section>
+        {setupStep === 'players' && (
+          <section className="section">
+            <h2 className="section-title">Количество игроков</h2>
+            {playersPicker((n) => setMaxPlayers(n), maxPlayers)}
+            <div className="btn-group">
+              <button type="button" className="btn btn-primary" onClick={() => setSetupStep('location')}>
+                Далее →
+              </button>
+            </div>
+          </section>
+        )}
 
-        <section className="section">
-          <h2 className="section-title">Машины трассы ({cityCars.length})</h2>
-          <p className="hint hint-sm section-hint">Игроки выберут одну из этих машин на телефоне</p>
-          {cityCarGrid(selectedCity)}
-        </section>
+        {setupStep === 'location' && (
+          <section className="section">
+            <BackButton
+              label="К числу игроков"
+              onClick={() => {
+                setSetupStep('players');
+                setLocationTouched(false);
+              }}
+            />
+            <h2 className="section-title">Выберите трассу</h2>
+            {cityPicker((id) => {
+              setSelectedCity(id);
+              setLocationTouched(true);
+            }, selectedCity)}
+            <div className="btn-group">
+              <button type="button" className="btn btn-primary" onClick={() => setSetupStep('cars')}>
+                Далее →
+              </button>
+            </div>
+          </section>
+        )}
 
-        <div className="btn-group">
-          <button type="button" className="btn btn-primary" onClick={createRoom}>
-            Создать комнату
-          </button>
-          <button type="button" className="btn btn-secondary" onClick={createRoomAndTest}>
-            Создать и протестировать
-          </button>
-        </div>
-        <p className="hint hint-sm section-hint">
-          «Протестировать» создаст комнату, добавит тест-бота и откроет Big Screen — можно показать гонку в одиночку
-        </p>
+        {setupStep === 'cars' && (
+          <>
+            <section className="section">
+              <BackButton label="К выбору локации" onClick={() => setSetupStep('location')} />
+              <h2 className="section-title">Доступные машины ({selectedCars.length})</h2>
+              <div className="card-grid card-grid-cars">
+                {CARS.map((car) => (
+                  <div
+                    key={car.id}
+                    className={`card card-car ${selectedCars.includes(car.id) ? 'selected' : ''}`}
+                    onClick={() => toggleCar(car.id)}
+                  >
+                    <div className="car-emoji" style={{ color: car.color }}>{car.emoji}</div>
+                    <strong>{car.name}</strong>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <div className="btn-group">
+              <button type="button" className="btn btn-primary" onClick={createRoom}>
+                Создать комнату
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -394,17 +297,16 @@ function App() {
     const city = getCityById(selectedCity);
     return (
       <div className="admin">
-        {audioControls}
+        {audioHint}
         <header className="admin-header admin-header-compact">
-          <h1>Сменить локацию</h1>
+          <h1>← Сменить локацию</h1>
           <p className="hint">Сейчас: {city.name}</p>
         </header>
         {error && <div className="section section-error">{error}</div>}
         <section className="section">
-          <BackButton label="Назад в лобби" onClick={() => setLobbyEdit(null)} />
+          <BackButton label="Назад в лobby" onClick={() => setLobbyEdit(null)} />
           <h2 className="section-title">Выберите трассу</h2>
           {cityPicker(applyCityInLobby, selectedCity)}
-          <p className="hint hint-sm section-hint">При смене локации игрокам нужно заново выбрать машину</p>
         </section>
       </div>
     );
@@ -413,14 +315,14 @@ function App() {
   if (lobbyEdit === 'players' && room) {
     return (
       <div className="admin">
-        {audioControls}
+        {audioHint}
         <header className="admin-header admin-header-compact">
-          <h1>Сменить число игроков</h1>
+          <h1>← Сменить число игроков</h1>
           <p className="hint">Сейчас: {room.maxPlayers} · подключено {room.players.length}</p>
         </header>
         {error && <div className="section section-error">{error}</div>}
         <section className="section">
-          <BackButton label="Назад в лобби" onClick={() => setLobbyEdit(null)} />
+          <BackButton label="Назад в лobby" onClick={() => setLobbyEdit(null)} />
           <h2 className="section-title">Количество игроков</h2>
           {playersPicker(applyPlayersInLobby, maxPlayers)}
         </section>
@@ -428,12 +330,9 @@ function App() {
     );
   }
 
-  const hasDemoBot = room?.players.some((p) => p.isDemoBot) ?? false;
-  const joinUrl = room ? getJoinUrl(room.id) : '';
-
   return (
     <div className="admin">
-      {audioControls}
+      {audioHint}
       <header className="admin-header admin-header-compact">
         <div className="admin-header-row">
           <h1>{BRAND.emoji} {BRAND.name}</h1>
@@ -459,44 +358,6 @@ function App() {
             </button>
             <button type="button" className="btn btn-back" onClick={() => setLobbyEdit('players')}>
               ← Сменить игроков
-            </button>
-          </div>
-        </section>
-      )}
-
-      {canEditLobby && (
-        <section className="section section-test">
-          <h2 className="section-title">Режим теста</h2>
-          <ol className="test-steps">
-            <li>Откройте Big Screen на проекторе или втором экране</li>
-            <li>Добавьте тест-бота или зайдите с телефона по QR</li>
-            <li>На телефоне: ник, машина, разрешите микрофон</li>
-            <li>Нажмите «Старт» и кричите — бот имитирует соперника</li>
-          </ol>
-          <div className="btn-group">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => room && openBigScreenRoom(room.id)}
-              disabled={!room}
-            >
-              Открыть Big Screen
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => joinUrl && window.open(joinUrl, '_blank', 'noopener,noreferrer')}
-              disabled={!joinUrl}
-            >
-              Открыть игрока
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={addDemoBot}
-              disabled={!room || hasDemoBot || (room?.players.length ?? 0) >= (room?.maxPlayers ?? 10)}
-            >
-              {hasDemoBot ? 'Тест-бот уже в лобби' : 'Добавить тест-бота'}
             </button>
           </div>
         </section>
@@ -554,22 +415,12 @@ function App() {
         </h2>
         <ul className="lobby-list">
           {room?.players.map((player) => {
-            const car = getCarById(player.carId);
+            const car = CARS.find((c) => c.id === player.carId);
             return (
               <li key={player.id} className="lobby-item">
-                <span className="lobby-item-name">
-                  {player.nickname}
-                  {player.isDemoBot && <span className="test-bot-badge">бот</span>}
-                </span>
+                <span className="lobby-item-name">{player.nickname}</span>
                 <span className="lobby-item-car">
-                  {car ? (
-                    <>
-                      <CarSpriteMini carId={car.id} />
-                      {car.name}
-                    </>
-                  ) : (
-                    '—'
-                  )}
+                  {car ? `${car.emoji} ${car.name}` : '—'}
                 </span>
                 <span className={player.carId ? 'lobby-item-ready' : 'lobby-item-waiting'}>
                   {player.carId ? '✓ Готов' : 'Выбирает машину...'}
@@ -589,16 +440,13 @@ function App() {
           <button type="button" className="btn btn-primary" onClick={startCountdown} disabled={!allReady || room?.status !== 'lobby'}>
             🏁 Старт
           </button>
-          <button type="button" className="btn btn-secondary" onClick={restartRace} disabled={!canRestart}>
+          <button type="button" className="btn btn-secondary" onClick={restartRace} disabled={room?.status === 'lobby'}>
             🔄 Рестарт
           </button>
-          <button type="button" className="btn btn-danger" onClick={newGame} disabled={!room}>
+          <button type="button" className="btn btn-danger" onClick={newGame}>
             🆕 Новая игра
           </button>
         </div>
-        {!canRestart && room?.status === 'lobby' && (
-          <p className="hint hint-sm section-hint">Рестарт станет доступен после старта гонки</p>
-        )}
       </section>
 
       {results.length > 0 && (
@@ -615,12 +463,12 @@ function App() {
             </thead>
             <tbody>
               {results.map((r) => {
-                const car = getCarById(r.carId);
+                const car = CARS.find((c) => c.id === r.carId);
                 return (
                   <tr key={r.id}>
                     <td className={`place-${r.place}`}>#{r.place}</td>
                     <td>{r.nickname}</td>
-                    <td>{car ? car.name : '—'}</td>
+                    <td>{car ? `${car.emoji} ${car.name}` : '—'}</td>
                     <td>{Math.round(r.progress)}%</td>
                   </tr>
                 );

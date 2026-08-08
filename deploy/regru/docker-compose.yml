@@ -1,0 +1,42 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      ALLOW_SOLO: "1"
+      REQUIRE_ORGANIZER_AUTH: "1"
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:?set SUPERADMIN_PASSWORD}
+      DATA_DIR: /app/data
+    restart: unless-stopped
+    volumes:
+      - origonki_uploads:/app/apps/server/uploads
+      - origonki_data:/app/data
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on:
+      - app
+    networks:
+      - web
+
+networks:
+  web:
+
+volumes:
+  origonki_uploads:
+  origonki_data:
+  caddy_data:
+  caddy_config:

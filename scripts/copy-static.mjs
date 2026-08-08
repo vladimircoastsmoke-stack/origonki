@@ -9,6 +9,8 @@ const copies = [
   ['apps/admin/dist', 'admin'],
   ['apps/bigscreen/dist', 'bigscreen'],
   ['apps/player/dist', 'player'],
+  ['apps/superadmin/dist', 'superadmin'],
+  ['apps/host/dist', 'host'],
 ];
 
 if (existsSync(publicDir)) {

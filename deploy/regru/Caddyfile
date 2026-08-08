@@ -1,0 +1,3 @@
+origonki.ru, www.origonki.ru {
+	reverse_proxy app:3001
+}

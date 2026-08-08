@@ -18,6 +18,7 @@ export const DEMO_BOT_ID_PREFIX = 'demo-bot:';
 
 interface RoomRuntime extends Omit<Room, 'players'> {
   players: PlayerRuntime[];
+  organizerId?: string;
   gameLoopInterval?: ReturnType<typeof setInterval>;
   countdownInterval?: ReturnType<typeof setInterval>;
   adminSocketId?: string;
@@ -30,7 +31,7 @@ export function getRoomCount(): number {
   return rooms.size;
 }
 
-export function createRoom(maxPlayers: MaxPlayers, city: string): Room {
+export function createRoom(maxPlayers: MaxPlayers, city: string, organizerId?: string): Room {
   if (rooms.size >= GAME_CONFIG.MAX_ROOMS) {
     throw new Error('Достигнут лимит одновременных комнат');
   }
@@ -48,6 +49,7 @@ export function createRoom(maxPlayers: MaxPlayers, city: string): Room {
     status: 'lobby',
     players: [],
     createdAt: Date.now(),
+    organizerId,
   };
 
   rooms.set(id, room);
@@ -56,6 +58,15 @@ export function createRoom(maxPlayers: MaxPlayers, city: string): Room {
 
 export function getRoom(roomId: string): RoomRuntime | undefined {
   return rooms.get(roomId);
+}
+
+export function assertRoomOrganizer(roomId: string, organizerId: string): RoomRuntime {
+  const room = rooms.get(roomId);
+  if (!room) throw new Error('Комната не найдена');
+  if (room.organizerId && room.organizerId !== organizerId) {
+    throw new Error('Нет доступа к этой комнате');
+  }
+  return room;
 }
 
 export function deleteRoom(roomId: string): void {

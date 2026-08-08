@@ -9,6 +9,8 @@ COPY apps/server/package.json apps/server/
 COPY apps/admin/package.json apps/admin/
 COPY apps/bigscreen/package.json apps/bigscreen/
 COPY apps/player/package.json apps/player/
+COPY apps/superadmin/package.json apps/superadmin/
+COPY apps/host/package.json apps/host/
 RUN pnpm install --frozen-lockfile || pnpm install
 
 # Build everything
@@ -17,19 +19,27 @@ COPY apps/server apps/server
 COPY apps/admin apps/admin
 COPY apps/bigscreen apps/bigscreen
 COPY apps/player apps/player
+COPY apps/superadmin apps/superadmin
+COPY apps/host apps/host
 COPY scripts scripts
+COPY deploy deploy
+
+RUN apk add --no-cache python3 make g++
 
 ENV NODE_ENV=production
 RUN pnpm --filter @decibel-racing/shared build && \
     pnpm --filter @decibel-racing/admin build && \
     pnpm --filter @decibel-racing/bigscreen build && \
     pnpm --filter @decibel-racing/player build && \
+    pnpm --filter @decibel-racing/superadmin build && \
+    pnpm --filter @decibel-racing/host build && \
     node scripts/copy-static.mjs && \
     pnpm --filter @decibel-racing/server build
 
-RUN mkdir -p apps/server/uploads
+RUN mkdir -p apps/server/uploads data
 
 EXPOSE 3001
 ENV PORT=3001
 WORKDIR /app/apps/server
+ENV DATA_DIR=/app/data
 CMD ["node", "dist/index.js"]

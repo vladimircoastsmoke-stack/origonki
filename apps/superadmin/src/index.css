@@ -1,0 +1,154 @@
+:root {
+  --bg: #1a0f0a;
+  --card: #2e1c14;
+  --border: #4a3020;
+  --accent: #ff6b2c;
+  --text: #fff8e7;
+  --muted: #c4a882;
+  --danger: #e8453c;
+  --success: #6bcb77;
+  --font: 'Press Start 2P', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; }
+
+body {
+  font-family: var(--font);
+  background: #0c0c44;
+  background-image: linear-gradient(180deg, #5c94fc 0%, #5c94fc 35%, #1a0f0a 35%);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+button, input {
+  font-family: inherit;
+  font-size: 0.65rem;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  color: var(--accent);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.55rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--card);
+  border: 3px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 4px 4px 0 var(--border);
+}
+
+.card h2 {
+  font-size: 0.7rem;
+  color: #ffd93d;
+  margin-bottom: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-size: 0.55rem;
+  color: var(--muted);
+}
+
+.field input {
+  padding: 0.75rem;
+  background: #241610;
+  border: 2px solid var(--border);
+  color: var(--text);
+}
+
+.btn {
+  padding: 0.75rem 1rem;
+  border: 3px solid var(--border);
+  background: var(--accent);
+  color: #1a0f0a;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--border);
+}
+
+.btn:hover { filter: brightness(1.05); }
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.success-box {
+  background: rgba(107, 203, 119, 0.15);
+  border: 2px solid var(--success);
+  padding: 1rem;
+  margin-top: 1rem;
+  font-size: 0.55rem;
+  line-height: 1.8;
+  word-break: break-all;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.5rem;
+}
+
+th, td {
+  border-bottom: 2px solid var(--border);
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th { color: #ffd93d; }
+
+.badge-blocked {
+  color: var(--danger);
+}
+
+.badge-active {
+  color: var(--success);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}

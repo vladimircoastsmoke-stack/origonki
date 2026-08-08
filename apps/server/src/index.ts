@@ -1,7 +1,8 @@
 import express, { type Express } from 'express';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+import { Server, type Socket } from 'socket.io';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -15,6 +16,7 @@ import {
   createRoom,
   getRoom,
   serializeRoom,
+  assertRoomOrganizer,
   addPlayer,
   rejoinPlayer,
   selectCar,
@@ -35,6 +37,12 @@ import {
   addDemoBot,
 } from './rooms.js';
 import { setupStaticFrontend } from './static.js';
+import { createAuthRouter } from './auth/routes.js';
+import {
+  getOrganizerFromCookieHeader,
+  isOrganizerAuthRequired,
+} from './auth/sessions.js';
+import type { OrganizerRow } from './auth/organizers.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -54,7 +62,9 @@ const allowedOrigins = isProduction
     : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
+app.use('/api/auth', createAuthRouter());
 app.use('/uploads', express.static(uploadsDir));
 
 const storage = multer.diskStorage({
@@ -79,6 +89,17 @@ const upload = multer({
 
 app.post('/api/upload-logo/:roomId', upload.single('logo'), (req, res) => {
   const roomId = String(req.params.roomId);
+  if (isOrganizerAuthRequired()) {
+    const organizer = getOrganizerFromCookieHeader(req.headers.cookie);
+    if (!organizer) {
+      return res.status(401).json({ error: 'Требуется вход' });
+    }
+    try {
+      assertRoomOrganizer(roomId, organizer.id);
+    } catch (err) {
+      return res.status(403).json({ error: (err as Error).message });
+    }
+  }
   const room = getRoom(roomId);
   if (!room) {
     return res.status(404).json({ error: 'Комната не найдена' });
@@ -102,6 +123,34 @@ const io = new Server(httpServer, {
 
 const socketRooms = new Map<string, string>();
 
+function resolveOrganizer(socket: Socket): OrganizerRow | null {
+  return getOrganizerFromCookieHeader(socket.handshake.headers.cookie);
+}
+
+function requireOrganizer(socket: Socket): OrganizerRow | null {
+  if (!isOrganizerAuthRequired()) return null;
+  const organizer = resolveOrganizer(socket);
+  if (!organizer) {
+    socket.emit(SOCKET_EVENTS.SERVER_ERROR, {
+      message: 'Войдите по вашей ссылке организатора',
+    });
+  }
+  return organizer;
+}
+
+function guardRoom(socket: Socket, roomId: string): boolean {
+  if (!isOrganizerAuthRequired()) return true;
+  const organizer = resolveOrganizer(socket);
+  if (!organizer) return false;
+  try {
+    assertRoomOrganizer(roomId, organizer.id);
+    return true;
+  } catch (err) {
+    socket.emit(SOCKET_EVENTS.SERVER_ERROR, { message: (err as Error).message });
+    return false;
+  }
+}
+
 function broadcastRoomUpdate(roomId: string): void {
   const room = getRoom(roomId);
   if (!room) return;
@@ -119,7 +168,12 @@ function emitCountdownTick(roomId: string): void {
 io.on('connection', (socket) => {
   socket.on(SOCKET_EVENTS.ADMIN_CREATE_ROOM, (data: { maxPlayers: MaxPlayers; city: string }, cb) => {
     try {
-      const room = createRoom(data.maxPlayers, data.city);
+      const organizer = requireOrganizer(socket);
+      if (isOrganizerAuthRequired() && !organizer) {
+        cb?.({ error: 'Требуется вход организатора' });
+        return;
+      }
+      const room = createRoom(data.maxPlayers, data.city, organizer?.id);
       socket.join(room.id);
       socketRooms.set(socket.id, room.id);
       const runtime = getRoom(room.id);
@@ -133,6 +187,9 @@ io.on('connection', (socket) => {
   socket.on(SOCKET_EVENTS.ADMIN_JOIN_ROOM, (data: { roomId: string }, cb) => {
     const room = getRoom(data.roomId);
     if (!room) return cb({ error: 'Комната не найдена' });
+    if (!guardRoom(socket, data.roomId)) {
+      return cb({ error: 'Нет доступа к комнате' });
+    }
     socket.join(data.roomId);
     socketRooms.set(socket.id, data.roomId);
     room.adminSocketId = socket.id;
@@ -148,6 +205,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_SELECT_CITY, (data: { roomId: string; city: string }) => {
+    if (!guardRoom(socket, data.roomId)) return;
     try {
       setRoomCity(data.roomId, data.city);
       broadcastRoomUpdate(data.roomId);
@@ -157,6 +215,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_SET_CARS, (data: { roomId: string; carIds: string[] }) => {
+    if (!guardRoom(socket, data.roomId)) return;
     try {
       setRoomCars(data.roomId, data.carIds);
       broadcastRoomUpdate(data.roomId);
@@ -168,6 +227,10 @@ io.on('connection', (socket) => {
   socket.on(
     SOCKET_EVENTS.ADMIN_SET_MAX_PLAYERS,
     (data: { roomId: string; maxPlayers: MaxPlayers }, cb) => {
+      if (!guardRoom(socket, data.roomId)) {
+        cb?.({ error: 'Нет доступа' });
+        return;
+      }
       try {
         setRoomMaxPlayers(data.roomId, data.maxPlayers);
         broadcastRoomUpdate(data.roomId);
@@ -181,6 +244,10 @@ io.on('connection', (socket) => {
   );
 
   socket.on(SOCKET_EVENTS.ADMIN_CLOSE_ROOM, (data: { roomId: string }, cb) => {
+    if (!guardRoom(socket, data.roomId)) {
+      cb?.({ error: 'Нет доступа' });
+      return;
+    }
     deleteRoom(data.roomId);
     socket.leave(data.roomId);
     socketRooms.delete(socket.id);
@@ -188,6 +255,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_START_COUNTDOWN, (data: { roomId: string }) => {
+    if (!guardRoom(socket, data.roomId)) return;
     try {
       startCountdown(data.roomId);
       broadcastRoomUpdate(data.roomId);
@@ -213,6 +281,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_RESTART_RACE, (data: { roomId: string }, cb) => {
+    if (!guardRoom(socket, data.roomId)) {
+      cb?.({ error: 'Нет доступа' });
+      return;
+    }
     try {
       restartRace(data.roomId);
       broadcastRoomUpdate(data.roomId);
@@ -226,6 +298,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_NEW_GAME, (data: { roomId: string }, cb) => {
+    if (!guardRoom(socket, data.roomId)) {
+      cb?.({ error: 'Нет доступа' });
+      return;
+    }
     try {
       newGame(data.roomId);
       broadcastRoomUpdate(data.roomId);
@@ -239,6 +315,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on(SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT, (data: { roomId: string }, cb) => {
+    if (!guardRoom(socket, data.roomId)) {
+      cb?.({ error: 'Нет доступа' });
+      return;
+    }
     try {
       addDemoBot(data.roomId);
       broadcastRoomUpdate(data.roomId);
