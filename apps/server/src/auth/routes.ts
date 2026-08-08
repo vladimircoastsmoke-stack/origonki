@@ -62,7 +62,7 @@ export function createAuthRouter(): Router {
       res.status(401).json({ error: 'Неверный пароль' });
       return;
     }
-    createSuperAdminSession(res);
+    createSuperAdminSession(req, res);
     res.json({ ok: true, role: 'superadmin' });
   });
 
@@ -114,7 +114,7 @@ export function createAuthRouter(): Router {
       res.status(401).json({ error: 'Неверная ссылка или пароль' });
       return;
     }
-    createOrganizerSession(res, organizer.id);
+    createOrganizerSession(req, res, organizer.id);
     res.json({
       ok: true,
       organizer: {

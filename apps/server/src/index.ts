@@ -55,6 +55,8 @@ if (!fs.existsSync(uploadsDir)) {
 const app: Express = express();
 const httpServer = createServer(app);
 
+app.set('trust proxy', 1);
+
 const allowedOrigins = isProduction
   ? true
   : process.env.CORS_ORIGIN

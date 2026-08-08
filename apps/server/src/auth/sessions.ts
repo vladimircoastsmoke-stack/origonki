@@ -34,8 +34,12 @@ function insertSession(kind: SessionKind, organizerId?: string): string {
   return token;
 }
 
-export function setSessionCookie(res: Response, token: string): void {
-  const secure = process.env.NODE_ENV === 'production';
+export function setSessionCookie(req: Request, res: Response, token: string): void {
+  const forwarded = req.headers['x-forwarded-proto'];
+  const secure =
+    req.secure ||
+    forwarded === 'https' ||
+    (Array.isArray(forwarded) && forwarded.includes('https'));
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure,
@@ -62,14 +66,14 @@ function getSession(token: string): SessionRow | undefined {
     .get(token, Date.now()) as SessionRow | undefined;
 }
 
-export function createSuperAdminSession(res: Response): void {
+export function createSuperAdminSession(req: Request, res: Response): void {
   const token = insertSession('superadmin');
-  setSessionCookie(res, token);
+  setSessionCookie(req, res, token);
 }
 
-export function createOrganizerSession(res: Response, organizerId: string): void {
+export function createOrganizerSession(req: Request, res: Response, organizerId: string): void {
   const token = insertSession('organizer', organizerId);
-  setSessionCookie(res, token);
+  setSessionCookie(req, res, token);
 }
 
 export function destroySession(req: Request, res: Response): void {
