@@ -14,18 +14,14 @@ cat <<'EOF'
 
   ssh root@89.108.70.189
 
-ШАГ 3 — на сервере (копируйте блок целиком)
+ШАГ 3 — на сервере (одна команда, без nano)
 
-  apt update && apt install -y docker.io docker-compose-v2 git
-  systemctl enable docker && systemctl start docker
-  git clone https://github.com/vladimircoastsmoke-stack/origonki.git
-  cd origonki
-  cp deploy/regru/.env.example deploy/regru/.env
-  nano deploy/regru/.env
+  cd ~/origonki
+  git pull
+  bash deploy/regru/set-password.sh ВАШ_ПАРОЛЬ
   bash deploy/regru/deploy.sh
 
-  В nano: строка SUPERADMIN_PASSWORD=ваш_пароль_офиса
-  Сохранить: Ctrl+O, Enter, Ctrl+X
+  Пример: bash deploy/regru/set-password.sh 588670936
 
 ШАГ 4 — проверка
 

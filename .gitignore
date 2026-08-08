@@ -9,6 +9,7 @@ apps/server/uploads/*
 *.tsbuildinfo
 .env
 .env.local
+deploy/regru/.env
 *.log
 .DS_Store
 
