@@ -1,3 +1,0 @@
--rw-r--r--@ 1 pavel  staff    259 Jul 30 12:54 /Users/pavel/.cursor/projects/Users-pavel-Desktop/terminals/42131.txt
--rw-r--r--@ 1 pavel  staff    813 Jul 30 12:29 /Users/pavel/.cursor/projects/Users-pavel-Desktop/terminals/42130.txt
--rw-r--r--@ 1 pavel  staff    336 Jul 30 12:26 /Users/pavel/.cursor/projects/Users-pavel-Desktop/terminals/42129.txt

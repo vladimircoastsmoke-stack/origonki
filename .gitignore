@@ -11,3 +11,10 @@ apps/server/uploads/*
 .env.local
 *.log
 .DS_Store
+
+# отладочный мусор (не коммитить)
+.diag_out.txt
+.health_out.txt
+_tunnel_probe*.txt
+build-log.txt
+build-report.txt

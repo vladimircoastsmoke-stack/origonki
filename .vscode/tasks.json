@@ -32,6 +32,14 @@
       "group": "none",
       "presentation": { "reveal": "always", "panel": "dedicated" },
       "problemMatcher": []
+    },
+    {
+      "label": "🇷🇺 8. Деплой на Reg.ru (инструкция)",
+      "type": "shell",
+      "command": "bash scripts/regru-instructions.sh",
+      "group": "none",
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true },
+      "problemMatcher": []
     }
   ]
 }

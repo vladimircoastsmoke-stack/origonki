@@ -1,5 +1,0 @@
-🏎️ ЗАПУСК НА IPHONE — скопируйте в терминал Cursor:
-
-cd ~/Desktop/Гонки && bash 5-ТЕСТ-НА-IPHONE.sh
-
-(токен ngrok уже сохранён в .env)
