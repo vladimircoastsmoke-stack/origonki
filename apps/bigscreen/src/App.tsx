@@ -168,7 +168,7 @@ function App() {
               <QRCodeSVG value={getJoinUrl(room.id)} size={320} fgColor="#0c0c44" level="M" />
             </div>
             <div className="lobby-code">{room.id}</div>
-            <p className="lobby-hint">Отсканируйте QR или введите код на телефоне</p>
+            <p className="lobby-hint">Сканируйте QR-код на телефоне</p>
           </div>
         </div>
 
