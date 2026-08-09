@@ -9,6 +9,7 @@ services:
       ALLOW_SOLO: "1"
       REQUIRE_ORGANIZER_AUTH: "1"
       SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:?set SUPERADMIN_PASSWORD}
+      PUBLIC_URL: https://origonki.ru
       DATA_DIR: /app/data
     restart: unless-stopped
     ports:

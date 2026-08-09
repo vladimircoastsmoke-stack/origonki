@@ -5,19 +5,24 @@ export function resolveServerUrl(envUrl?: string): string {
   return 'http://localhost:3001';
 }
 
-export function resolvePlayerJoinUrl(roomId: string, envPlayerUrl?: string): string {
-  const base =
-    envPlayerUrl && envPlayerUrl.length > 0
-      ? envPlayerUrl.replace(/\/$/, '')
-      : typeof window !== 'undefined'
-        ? window.location.origin
-        : 'http://localhost:5175';
-  return `${base}/join/${roomId}`;
+/** Базовый публичный URL сайта (HTTPS-домен для QR и ссылок). */
+export function resolvePublicBase(envUrl?: string, serverPublicUrl?: string | null): string {
+  if (serverPublicUrl && serverPublicUrl.length > 0) return serverPublicUrl.replace(/\/$/, '');
+  if (envUrl && envUrl.length > 0) return envUrl.replace(/\/$/, '');
+  if (typeof window !== 'undefined') return window.location.origin;
+  return 'http://localhost:3001';
 }
 
-export function resolveBigScreenUrl(roomId: string): string {
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/screen/?room=${roomId}`;
-  }
+export function resolvePlayerJoinUrl(
+  roomId: string,
+  envPlayerUrl?: string,
+  serverPublicUrl?: string | null,
+): string {
+  return `${resolvePublicBase(envPlayerUrl, serverPublicUrl)}/join/${roomId}`;
+}
+
+export function resolveBigScreenUrl(roomId: string, publicBase?: string | null): string {
+  const base = resolvePublicBase(undefined, publicBase);
+  if (base) return `${base}/screen/?room=${roomId}`;
   return `/screen/?room=${roomId}`;
 }

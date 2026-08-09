@@ -9,13 +9,13 @@ import {
   getCarsByCity,
   getCarById,
   asCitySceneId,
-  openBigScreenRoom,
   type Room,
   type Player,
   type MaxPlayers,
   type CitySceneId,
 } from '@decibel-racing/shared';
-import { getSocket, getJoinUrl, getServerUrl, resolveBigScreenUrl } from './lib/socket';
+import { getSocket, getJoinUrl, getServerUrl, getBigScreenUrl } from './lib/socket';
+import { usePublicBase } from './hooks/usePublicBase';
 import { useAdminAudio } from './hooks/useAdminAudio';
 import { useCountdownBeep } from './hooks/useCountdownBeep';
 import { GameIntroBox } from './components/GameIntro';
@@ -48,6 +48,7 @@ function App() {
   const [locationTouched, setLocationTouched] = useState(false);
 
   const socket = getSocket();
+  const publicBase = usePublicBase();
   const cityCars = getCarsByCity(selectedCity);
 
   const { needsUnlock, unlock } = useAdminAudio(
@@ -150,7 +151,7 @@ function App() {
               return;
             }
             if (botResponse.room) setRoom(botResponse.room);
-            openBigScreenRoom(created.id);
+            window.open(getBigScreenUrl(created.id, publicBase), '_blank', 'noopener,noreferrer');
           },
         );
       },
@@ -429,7 +430,7 @@ function App() {
   }
 
   const hasDemoBot = room?.players.some((p) => p.isDemoBot) ?? false;
-  const joinUrl = room ? getJoinUrl(room.id) : '';
+  const joinUrl = room ? getJoinUrl(room.id, publicBase) : '';
 
   return (
     <div className="admin">
@@ -477,7 +478,9 @@ function App() {
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => room && openBigScreenRoom(room.id)}
+              onClick={() =>
+                room && window.open(getBigScreenUrl(room.id, publicBase), '_blank', 'noopener,noreferrer')
+              }
               disabled={!room}
             >
               Открыть Big Screen
@@ -505,13 +508,13 @@ function App() {
       <section className="section qr-section">
         <div className="room-code">{room?.id}</div>
         <div className="qr-wrapper">
-          {room && <QRCodeSVG value={getJoinUrl(room.id)} size={200} fgColor="#2D1B4E" />}
+          {room && <QRCodeSVG value={getJoinUrl(room.id, publicBase)} size={200} fgColor="#2D1B4E" />}
         </div>
         <p className="hint">Отсканируйте QR или введите код на телефоне</p>
         <p className="hint hint-sm">
           Big Screen:{' '}
-          <a href={room ? resolveBigScreenUrl(room.id) : '#'} target="_blank" rel="noreferrer">
-            {room ? resolveBigScreenUrl(room.id) : ''}
+          <a href={room ? getBigScreenUrl(room.id, publicBase) : '#'} target="_blank" rel="noreferrer">
+            {room ? getBigScreenUrl(room.id, publicBase) : ''}
           </a>
         </p>
       </section>

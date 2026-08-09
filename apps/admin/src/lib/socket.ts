@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { resolveServerUrl, resolvePlayerJoinUrl } from '@decibel-racing/shared';
+import { resolveServerUrl, resolvePlayerJoinUrl, resolveBigScreenUrl } from '@decibel-racing/shared';
 
 const SERVER_URL = resolveServerUrl(import.meta.env.VITE_SERVER_URL);
 
@@ -22,8 +22,10 @@ export function getServerUrl(): string {
   return SERVER_URL;
 }
 
-export function getJoinUrl(roomId: string): string {
-  return resolvePlayerJoinUrl(roomId, import.meta.env.VITE_PLAYER_URL);
+export function getJoinUrl(roomId: string, publicBase?: string | null): string {
+  return resolvePlayerJoinUrl(roomId, import.meta.env.VITE_PLAYER_URL, publicBase);
 }
 
-export { resolveBigScreenUrl } from '@decibel-racing/shared';
+export function getBigScreenUrl(roomId: string, publicBase?: string | null): string {
+  return resolveBigScreenUrl(roomId, publicBase);
+}

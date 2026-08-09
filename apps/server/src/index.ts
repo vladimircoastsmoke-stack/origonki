@@ -66,6 +66,12 @@ const allowedOrigins = isProduction
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
+
+app.get('/api/public-config', (_req, res) => {
+  const publicUrl = process.env.PUBLIC_URL?.replace(/\/$/, '') ?? null;
+  res.json({ publicUrl });
+});
+
 app.use('/api/auth', createAuthRouter());
 app.use('/uploads', express.static(uploadsDir));
 
