@@ -483,31 +483,6 @@
   z-index: 5;
 }
 
-.audio-unlock-hint {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 100;
-  font-family: var(--font-display);
-  font-size: 0.45rem;
-  padding: 0.6rem 1rem;
-  background: #fc9838;
-  color: #0c0c44;
-  border: 3px solid #0c0c44;
-  box-shadow: 4px 4px 0 #0c0c44;
-  cursor: pointer;
-  animation: audio-pulse 1.2s steps(2) infinite;
-}
-
-.audio-unlock-hint:hover {
-  background: #fcfcfc;
-}
-
-@keyframes audio-pulse {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-
 .podium-screen {
   display: flex;
   flex-direction: column;
@@ -646,32 +621,4 @@
 
 .game-intro-art {
   margin-bottom: 1rem;
-}
-
-.audio-unlock-hint {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 100;
-  font-family: var(--font-display);
-  font-size: 0.55rem;
-  padding: 0.6rem 0.9rem;
-  background: var(--accent);
-  color: #0c0c44;
-  border: 2px solid #0c0c44;
-  border-radius: 4px;
-  box-shadow: 0 4px 0 #0c0c44;
-  cursor: pointer;
-  line-height: 1.6;
-}
-
-.audio-unlock-hint:hover {
-  filter: brightness(1.08);
-}
-
-.lobby-screen .audio-unlock-hint {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  bottom: 1.25rem;
 }
