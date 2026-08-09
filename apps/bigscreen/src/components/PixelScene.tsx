@@ -40,7 +40,6 @@ function DubaiScene() {
           <span key={i} className="scene-star" style={{ left: `${(i * 19 + 5) % 98}%`, top: `${(i * 11 + 3) % 28}%` }} />
         ))}
       </div>
-      <div className="scene-moon" />
       <div className="scene-dubai-buildings">
         <div className="dubai-tower dubai-t1" />
         <div className="dubai-tower dubai-burj" />

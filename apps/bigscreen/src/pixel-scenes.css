@@ -22,16 +22,6 @@
   background: var(--scene-window-lit);
 }
 
-.scene-moon {
-  position: absolute;
-  top: 6%;
-  right: 10%;
-  width: 28px;
-  height: 28px;
-  background: #fcfcfc;
-  box-shadow: -8px 0 0 var(--scene-sky-bottom);
-}
-
 .scene-dubai-buildings {
   position: absolute;
   bottom: 35%;

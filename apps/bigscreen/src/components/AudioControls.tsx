@@ -1,5 +1,3 @@
-import { AudioMuteButton } from './AudioMuteButton';
-
 export function AudioControls({
   needsUnlock,
   onUnlock,
@@ -7,14 +5,11 @@ export function AudioControls({
   needsUnlock: boolean;
   onUnlock: () => void;
 }) {
+  if (!needsUnlock) return null;
+
   return (
-    <>
-      <AudioMuteButton />
-      {needsUnlock && (
-        <button type="button" className="audio-unlock-hint" onClick={() => void onUnlock()}>
-          🔊 Нажмите для музыки
-        </button>
-      )}
-    </>
+    <button type="button" className="audio-unlock-hint" onClick={() => void onUnlock()}>
+      🔊 Нажмите для музыки
+    </button>
   );
 }
