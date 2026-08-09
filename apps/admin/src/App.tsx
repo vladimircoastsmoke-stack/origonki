@@ -112,22 +112,6 @@ function App() {
     };
   }, [socket, room?.id, step]);
 
-  const addDemoBot = useCallback(() => {
-    if (!room) return;
-    setError(null);
-    socket.emit(
-      SOCKET_EVENTS.ADMIN_ADD_DEMO_BOT,
-      { roomId: room.id },
-      (response: { room?: Room; error?: string }) => {
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        if (response.room) setRoom(response.room);
-      },
-    );
-  }, [socket, room]);
-
   const createRoomAndTest = useCallback(() => {
     socket.emit(
       SOCKET_EVENTS.ADMIN_CREATE_ROOM,
@@ -429,9 +413,6 @@ function App() {
     );
   }
 
-  const hasDemoBot = room?.players.some((p) => p.isDemoBot) ?? false;
-  const joinUrl = room ? getJoinUrl(room.id, publicBase) : '';
-
   return (
     <div className="admin">
       {audioControls}
@@ -460,46 +441,6 @@ function App() {
             </button>
             <button type="button" className="btn btn-back" onClick={() => setLobbyEdit('players')}>
               ← Сменить игроков
-            </button>
-          </div>
-        </section>
-      )}
-
-      {canEditLobby && (
-        <section className="section section-test">
-          <h2 className="section-title">Режим теста</h2>
-          <ol className="test-steps">
-            <li>Откройте Big Screen на проекторе или втором экране</li>
-            <li>Добавьте тест-бота или зайдите с телефона по QR</li>
-            <li>На телефоне: ник, машина, разрешите микрофон</li>
-            <li>Нажмите «Старт» и кричите — бот имитирует соперника</li>
-          </ol>
-          <div className="btn-group">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                room && window.open(getBigScreenUrl(room.id, publicBase), '_blank', 'noopener,noreferrer')
-              }
-              disabled={!room}
-            >
-              Открыть Big Screen
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => joinUrl && window.open(joinUrl, '_blank', 'noopener,noreferrer')}
-              disabled={!joinUrl}
-            >
-              Открыть игрока
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={addDemoBot}
-              disabled={!room || hasDemoBot || (room?.players.length ?? 0) >= (room?.maxPlayers ?? 10)}
-            >
-              {hasDemoBot ? 'Тест-бот уже в лобби' : 'Добавить тест-бота'}
             </button>
           </div>
         </section>
