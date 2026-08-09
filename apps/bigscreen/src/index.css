@@ -29,4 +29,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* TV / проектор: базовый масштаб текста */
+html {
+  font-size: clamp(14px, 1.15vw, 22px);
+}
+
 button { font-family: inherit; cursor: pointer; border: none; }

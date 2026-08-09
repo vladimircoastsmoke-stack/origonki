@@ -1,8 +1,16 @@
 .bigscreen {
   width: 100vw;
+  min-height: 100vh;
   height: 100vh;
   overflow: hidden;
   position: relative;
+}
+
+.bigscreen.lobby-screen {
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .theme-dendy {
@@ -49,32 +57,60 @@
 .lobby-screen {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: clamp(1rem, 2.5vh, 2.5rem) clamp(1.5rem, 4vw, 4rem);
   z-index: 10;
 }
 
+.lobby-layout {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vh, 2rem);
+  position: relative;
+  z-index: 10;
+}
+
+.lobby-header {
+  text-align: center;
+}
+
+.lobby-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 2vh, 2rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .lobby-main {
+    grid-template-columns: minmax(280px, 1fr) minmax(280px, 420px);
+    justify-content: center;
+  }
+}
+
 .lobby-logo {
-  max-height: 64px;
-  margin-bottom: 1rem;
+  max-height: clamp(48px, 8vh, 96px);
+  margin-bottom: 0.75rem;
   position: relative;
   z-index: 10;
 }
 
 .lobby-title {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 3.5vw, 3.5rem);
   text-shadow: 4px 4px 0 #0c0c44;
   color: #fc9838;
   position: relative;
   z-index: 10;
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .lobby-subtitle {
-  font-size: 0.7rem;
+  font-size: clamp(0.85rem, 1.8vw, 1.75rem);
   color: #fcfcfc;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   position: relative;
   z-index: 10;
 }
@@ -83,48 +119,58 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: clamp(0.5rem, 1.5vh, 1.25rem);
   position: relative;
   z-index: 10;
 }
 
 .qr-wrapper {
   background: #fcfcfc;
-  padding: 1rem;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem);
   border: 4px solid #0c0c44;
   box-shadow: 6px 6px 0 #0c0c44;
 }
 
+.qr-wrapper svg {
+  width: min(42vw, 320px) !important;
+  height: min(42vw, 320px) !important;
+}
+
 .lobby-code {
-  font-size: 2rem;
-  letter-spacing: 8px;
+  font-size: clamp(2rem, 6vw, 5.5rem);
+  letter-spacing: clamp(4px, 1vw, 12px);
   color: #fc9838;
   text-shadow: 3px 3px 0 #0c0c44;
 }
 
 .lobby-hint {
   color: #fcfcfc;
-  font-size: 0.55rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: clamp(0.95rem, 1.8vw, 2rem);
+  font-weight: 600;
+  text-align: center;
+  max-width: 28ch;
+  line-height: 1.4;
 }
 
 .lobby-players {
   position: relative;
   z-index: 10;
+  text-align: center;
 }
 
 .lobby-players h2 {
-  font-size: 0.6rem;
+  font-size: clamp(0.85rem, 1.6vw, 1.75rem);
   margin-bottom: 1rem;
   text-align: center;
 }
 
 .player-chips {
   display: flex;
-  gap: 0.75rem;
+  gap: clamp(0.5rem, 1vw, 1rem);
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 90vw;
+  max-width: 100%;
 }
 
 .player-chip {
@@ -133,8 +179,8 @@
   gap: 0.5rem;
   background: rgba(12, 12, 68, 0.85);
   border: 3px solid #fc9838;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.5rem;
+  padding: clamp(0.35rem, 0.8vw, 0.75rem) clamp(0.6rem, 1.2vw, 1.25rem);
+  font-size: clamp(0.7rem, 1.3vw, 1.35rem);
   color: #fcfcfc;
 }
 
@@ -167,7 +213,7 @@
 }
 
 .race-title {
-  font-size: 0.65rem;
+  font-size: clamp(0.75rem, 1.5vw, 1.5rem);
   color: var(--track-accent, #fc9838);
 }
 
@@ -349,7 +395,7 @@
 }
 
 .car-name {
-  font-size: 0.5rem;
+  font-size: clamp(0.55rem, 1.1vw, 1.1rem);
   margin-bottom: 2px;
   white-space: nowrap;
   color: #fcfcfc;
@@ -470,7 +516,7 @@
 }
 
 .podium-title {
-  font-size: 1.2rem;
+  font-size: clamp(1.2rem, 3vw, 3rem);
   margin-bottom: 2rem;
   color: #fc9838;
   text-shadow: 3px 3px 0 #0c0c44;
@@ -478,7 +524,7 @@
 
 .podium { display: flex; align-items: flex-end; gap: 1.5rem; }
 .podium-place { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-.podium-name { font-size: 0.55rem; }
+.podium-name { font-size: clamp(0.7rem, 1.4vw, 1.4rem); }
 
 .podium-block {
   width: 90px;
@@ -533,34 +579,42 @@
 .game-intro {
   position: relative;
   z-index: 10;
-  max-width: 640px;
+  width: 100%;
+  max-width: none;
   text-align: center;
   background: rgba(12, 12, 68, 0.92);
-  border: 3px solid #fc9838;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.25rem;
+  border: 4px solid #fc9838;
+  padding: clamp(1rem, 2vh, 1.75rem) clamp(1.25rem, 2.5vw, 2.5rem);
   box-shadow: 4px 4px 0 #0c0c44;
 }
 
+.game-intro-compact {
+  margin-bottom: 0;
+}
+
 .game-intro-badge {
-  font-size: 0.45rem;
-  color: #fcfcfc;
-  margin-bottom: 0.6rem;
+  font-size: clamp(0.75rem, 1.4vw, 1.5rem);
+  color: #fc9838;
+  margin-bottom: 0.75rem;
   letter-spacing: 2px;
 }
 
 .game-intro-headline {
-  font-size: 0.55rem;
-  color: #fc9838;
-  line-height: 1.8;
-  margin-bottom: 0.6rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: clamp(1rem, 2.2vw, 2.5rem);
+  font-weight: 700;
+  color: #fcfcfc;
+  line-height: 1.35;
+  margin-bottom: 0.75rem;
   text-shadow: 2px 2px 0 #0c0c44;
 }
 
 .game-intro-essence {
-  font-size: 0.48rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: clamp(0.9rem, 1.8vw, 2rem);
+  font-weight: 600;
   color: #fcfcfc;
-  line-height: 1.8;
+  line-height: 1.45;
   margin-bottom: 0;
 }
 
@@ -617,7 +671,7 @@
   left: 1rem;
   z-index: 100;
   font-family: var(--font-display);
-  font-size: 0.55rem;
+  font-size: clamp(0.55rem, 1vw, 1rem);
   padding: 0.55rem 0.85rem;
   background: rgba(12, 12, 68, 0.92);
   color: #fcfcfc;

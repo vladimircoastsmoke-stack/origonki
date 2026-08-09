@@ -153,30 +153,36 @@ function App() {
     <div className={`bigscreen theme-dendy lobby-screen lobby-dendy scene-${city.scene}`}>
       <CityBackdrop cityId={city.id} />
       {audioControls}
-      {logoUrl && <img src={logoUrl} alt="Event" className="lobby-logo" />}
-      <h1 className="lobby-title">{BRAND.emoji} {BRAND.name}</h1>
-      <p className="lobby-subtitle">{city.name}</p>
+      <div className="lobby-layout">
+        <header className="lobby-header">
+          {logoUrl && <img src={logoUrl} alt="Event" className="lobby-logo" />}
+          <h1 className="lobby-title">{BRAND.emoji} {BRAND.name}</h1>
+          <p className="lobby-subtitle">{city.name}</p>
+        </header>
 
-      <GameIntroBox variant="compact" />
+        <div className="lobby-main">
+          <GameIntroBox variant="compact" showIllustration={false} />
 
-      <div className="lobby-qr">
-        <div className="qr-wrapper">
-          <QRCodeSVG value={getJoinUrl(room.id)} size={280} fgColor="#0c0c44" />
-        </div>
-        <div className="lobby-code">{room.id}</div>
-        <p className="lobby-hint">Отсканируйте QR или введите код</p>
-      </div>
-
-      <div className="lobby-players">
-        <h2>Игроки ({room.players.length}/{room.maxPlayers})</h2>
-        <div className="player-chips">
-          {room.players.map((p) => (
-            <div key={p.id} className="player-chip">
-              {p.carId ? <CarSpriteMini carId={p.carId} /> : <span>👤</span>}
-              <span>{p.nickname}</span>
-              {p.carId && <span className="chip-ready">✓</span>}
+          <div className="lobby-qr">
+            <div className="qr-wrapper">
+              <QRCodeSVG value={getJoinUrl(room.id)} size={320} fgColor="#0c0c44" level="M" />
             </div>
-          ))}
+            <div className="lobby-code">{room.id}</div>
+            <p className="lobby-hint">Отсканируйте QR или введите код на телефоне</p>
+          </div>
+        </div>
+
+        <div className="lobby-players">
+          <h2>Игроки ({room.players.length}/{room.maxPlayers})</h2>
+          <div className="player-chips">
+            {room.players.map((p) => (
+              <div key={p.id} className="player-chip">
+                {p.carId ? <CarSpriteMini carId={p.carId} /> : <span>👤</span>}
+                <span>{p.nickname}</span>
+                {p.carId && <span className="chip-ready">✓</span>}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
