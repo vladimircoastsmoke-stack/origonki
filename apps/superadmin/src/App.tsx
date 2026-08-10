@@ -118,7 +118,7 @@ export default function App() {
   };
 
   const copyCredentials = (slug: string, pwd: string, mail: string) => {
-    const text = `ОриГonki — доступ организатора\n\nСсылка: ${fullHostUrl(slug)}\nПароль: ${pwd}\nEmail: ${mail}`;
+    const text = `ОриГонки — доступ организатора\n\nСсылка: ${fullHostUrl(slug)}\nПароль: ${pwd}\nEmail: ${mail}`;
     void navigator.clipboard.writeText(text);
   };
 
