@@ -20,16 +20,20 @@
   font-family: var(--font-display);
   font-size: 1.75rem;
   color: var(--accent);
-  text-shadow: 3px 3px 0 var(--border), 0 0 30px var(--accent-glow);
+  text-shadow:
+    3px 3px 0 #1a0533,
+    0 0 18px rgba(255, 107, 44, 0.45),
+    0 0 8px rgba(0, 0, 0, 0.8);
   margin-bottom: 0.75rem;
   letter-spacing: 1px;
   line-height: 1.6;
 }
 
 .admin-header p {
-  color: var(--text-secondary);
+  color: #ffd4ec;
   font-size: 1rem;
   line-height: 1.8;
+  text-shadow: 2px 2px 0 #1a0533;
 }
 
 .admin-header-compact {
@@ -139,7 +143,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: #5c94fc;
+  background: #ff2d95;
   color: #fff;
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -168,7 +172,7 @@
 }
 
 .admin-scene-preview.pixel-scene-dubai {
-  background: linear-gradient(180deg, #0c0c44 45%, #5c94fc 55%, #fc9838 65%, #d82800 100%);
+  background: linear-gradient(180deg, #0d0221 45%, #ff2d95 55%, #fc9838 65%, #d82800 100%);
 }
 
 .admin-scene-preview.pixel-scene-murmansk {

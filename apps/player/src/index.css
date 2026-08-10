@@ -1,3 +1,5 @@
+@import '../../../packages/shared/styles/retrowave-bg.css';
+
 :root {
   --bg-primary: #1a0f0a;
   --bg-card: #2e1c14;
@@ -13,7 +15,7 @@
   --font-body: 'Press Start 2P', monospace;
   --radius: 4px;
 
-  --dendy-sky: #5c94fc;
+  --dendy-sky: #ff2d95;
   --dendy-accent: #fc9838;
   --dendy-dark: #0c0c44;
 }
@@ -26,7 +28,7 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--bg-primary);
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   min-height: 100dvh;
@@ -35,6 +37,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+body.retrowave-bg {
+  background-color: var(--retro-bg-base);
 }
 
 button { font-family: inherit; cursor: pointer; border: none; }

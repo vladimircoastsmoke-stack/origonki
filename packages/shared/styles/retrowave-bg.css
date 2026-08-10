@@ -1,0 +1,111 @@
+/* Retrowave / synthwave page background — shared across Origonki apps */
+
+:root {
+  --retro-bg-base: #0c0c44;
+  --retro-bg-lower: #1a0f0a;
+  --retro-sky-top: #0d0221;
+  --retro-sky-mid: #1a0a3e;
+  --retro-purple: #3d1566;
+  --retro-horizon: #ff2d95;
+  --retro-sun: #ff8a00;
+  --retro-grid: rgba(255, 45, 149, 0.45);
+  --retro-grid-bright: rgba(255, 138, 0, 0.55);
+  --retro-text-shadow: 2px 2px 0 #1a0533, 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+body.retrowave-bg {
+  background-color: var(--retro-bg-base);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.04) 3px,
+      rgba(0, 0, 0, 0.04) 4px
+    ),
+    radial-gradient(ellipse 90% 55% at 50% 38%, rgba(255, 138, 0, 0.75) 0%, rgba(255, 45, 149, 0.45) 30%, transparent 62%),
+    linear-gradient(
+      180deg,
+      var(--retro-sky-top) 0%,
+      var(--retro-sky-mid) 18%,
+      var(--retro-purple) 34%,
+      #5a2080 39%,
+      var(--retro-horizon) 43%,
+      #ff6b35 47%,
+      var(--retro-bg-base) 52%,
+      var(--retro-bg-lower) 100%
+    );
+  background-attachment: fixed;
+}
+
+body.retrowave-bg::after {
+  content: '';
+  position: fixed;
+  left: -60%;
+  right: -60%;
+  top: 28%;
+  height: 55%;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--retro-grid) 2px, transparent 2px),
+    linear-gradient(90deg, var(--retro-grid) 2px, transparent 2px);
+  background-size: 64px 36px;
+  transform: perspective(240px) rotateX(58deg);
+  transform-origin: center top;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%);
+  opacity: 0.85;
+}
+
+body.retrowave-bg #root {
+  position: relative;
+  z-index: 1;
+}
+
+.retrowave-heading {
+  text-shadow:
+    3px 3px 0 #1a0533,
+    0 0 18px rgba(255, 107, 44, 0.45),
+    var(--retro-text-shadow);
+}
+
+.retrowave-subheading {
+  color: #ffd4ec;
+  text-shadow: var(--retro-text-shadow);
+}
+
+/* Big screen / pixel-scene lobby sky */
+.lobby-screen .scene-sky,
+.retrowave-scene-sky {
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 88%, rgba(255, 138, 0, 0.85) 0%, rgba(255, 45, 149, 0.5) 35%, transparent 68%),
+    linear-gradient(
+      180deg,
+      var(--retro-sky-top) 0%,
+      var(--retro-sky-mid) 35%,
+      var(--retro-purple) 62%,
+      #5a2080 72%,
+      var(--retro-horizon) 82%,
+      #ff6b35 88%,
+      var(--retro-bg-base) 100%
+    ) !important;
+}
+
+.lobby-screen .pixel-scene::after {
+  content: '';
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 18%;
+  height: 42%;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--retro-grid-bright) 2px, transparent 2px),
+    linear-gradient(90deg, var(--retro-grid-bright) 2px, transparent 2px);
+  background-size: 72px 40px;
+  transform: perspective(220px) rotateX(58deg);
+  transform-origin: center bottom;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  opacity: 0.7;
+  z-index: 1;
+}

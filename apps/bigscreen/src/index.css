@@ -1,3 +1,5 @@
+@import '../../../packages/shared/styles/retrowave-bg.css';
+
 :root {
   --bg-primary: #0c0c44;
   --bg-card: #1c1c6e;
@@ -10,7 +12,7 @@
   --border: #585858;
   --font-display: 'Press Start 2P', monospace;
   --font-body: 'Press Start 2P', monospace;
-  --dendy-sky: #5c94fc;
+  --dendy-sky: #ff2d95;
   --dendy-ground: #fc9838;
   --dendy-dark: #0c0c44;
   --dendy-building: #1c1c6e;
@@ -20,7 +22,6 @@
 
 body {
   font-family: var(--font-body);
-  background: var(--bg-primary);
   color: var(--text-primary);
   overflow: hidden;
   image-rendering: pixelated;

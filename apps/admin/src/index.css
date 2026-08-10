@@ -1,3 +1,5 @@
+@import '../../../packages/shared/styles/retrowave-bg.css';
+
 :root {
   --bg-primary: #1a0f0a;
   --bg-secondary: #241610;
@@ -29,10 +31,6 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: #0c0c44;
-  background-image:
-    linear-gradient(180deg, #5c94fc 0%, #5c94fc 38%, transparent 38%),
-    radial-gradient(ellipse at 50% 100%, rgba(252, 152, 56, 0.15) 0%, transparent 55%);
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.75;

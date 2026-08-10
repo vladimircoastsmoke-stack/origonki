@@ -112,7 +112,9 @@
 
 .lobby-title {
   font-size: clamp(1.4rem, 3.5vw, 3.5rem);
-  text-shadow: 4px 4px 0 #0c0c44;
+  text-shadow:
+    4px 4px 0 #1a0533,
+    0 0 20px rgba(252, 152, 56, 0.45);
   color: #fc9838;
   position: relative;
   z-index: 10;
@@ -121,10 +123,11 @@
 
 .lobby-subtitle {
   font-size: clamp(0.85rem, 1.8vw, 1.75rem);
-  color: #fcfcfc;
+  color: #ffd4ec;
   margin-bottom: 0.5rem;
   position: relative;
   z-index: 10;
+  text-shadow: 2px 2px 0 #1a0533;
 }
 
 .qr-wrapper {
