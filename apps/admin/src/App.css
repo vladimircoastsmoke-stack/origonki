@@ -620,11 +620,18 @@
   margin-bottom: 1.25rem;
 }
 
-.auth-screen .hint {
-  color: #fcfcfc;
+.auth-screen .section-hint {
+  color: var(--accent);
   font-size: 0.75rem;
   line-height: 1.9;
   max-width: 36rem;
+  text-shadow: 2px 2px 0 #1a0533;
+}
+
+.auth-screen .hint:not(.section-hint) {
+  color: #fcfcfc;
+  font-size: 0.75rem;
+  line-height: 1.9;
   text-shadow: 2px 2px 0 #1a0533;
 }
 
