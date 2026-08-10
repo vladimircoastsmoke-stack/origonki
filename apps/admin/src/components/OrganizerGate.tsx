@@ -53,7 +53,8 @@ export function OrganizerGate({ children }: { children: ReactNode }) {
   if (state === 'denied') {
     return (
       <div className="admin auth-screen">
-        <h1>{BRAND.emoji} {BRAND.name}</h1>
+        <div className="brand-logo">{BRAND.emoji}</div>
+        <h1 className="brand-title">{BRAND.name}</h1>
         <p className="hint section-hint">
           Войдите по персональной ссылке организатора и паролю, которые выдал модератор.
         </p>

@@ -13,18 +13,41 @@
 .brand-logo {
   font-size: 3.5rem;
   margin-bottom: 0.5rem;
-  filter: drop-shadow(0 4px 0 #4a3020);
+  filter: drop-shadow(0 4px 0 #1a0533);
 }
 
-.admin-header h1 {
-  font-family: var(--font-display);
+.brand-title {
+  font-family: var(--font-brand);
+  font-size: clamp(2.75rem, 9vw, 4.25rem);
+  font-weight: 400;
+  color: #fcfcfc;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  margin-bottom: 0.75rem;
+  text-shadow:
+    0 2px 0 #1a0533,
+    0 4px 12px rgba(0, 0, 0, 0.75),
+    0 0 28px rgba(0, 0, 0, 0.45);
+}
+
+.admin-header-row .brand-title {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin: 0;
+}
+
+.admin-header-row .brand-logo-inline {
   font-size: 1.75rem;
+  filter: drop-shadow(0 2px 0 #1a0533);
+}
+
+.admin-header-compact h1 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
   color: var(--accent);
   text-shadow:
     3px 3px 0 #1a0533,
     0 0 18px rgba(255, 107, 44, 0.45),
     0 0 8px rgba(0, 0, 0, 0.8);
-  margin-bottom: 0.75rem;
   letter-spacing: 1px;
   line-height: 1.6;
 }
@@ -46,11 +69,6 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.admin-header-row h1 {
-  font-size: 1.25rem;
-  margin: 0;
 }
 
 .section {
@@ -592,10 +610,20 @@
   padding: 2rem;
 }
 
-.auth-screen h1 {
-  font-size: 1rem;
-  color: var(--accent);
-  margin-bottom: 1rem;
+.auth-screen h1.brand-title {
+  margin-bottom: 1.25rem;
+}
+
+.auth-screen .hint {
+  color: #fcfcfc;
+  font-size: 0.75rem;
+  line-height: 1.9;
+  max-width: 36rem;
+  text-shadow: 2px 2px 0 #1a0533;
+}
+
+.auth-screen .hint-sm {
+  color: #ffd4ec;
 }
 
 .audio-mute-btn {

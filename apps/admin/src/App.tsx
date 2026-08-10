@@ -311,7 +311,7 @@ function App() {
           {audioControls}
           <header className="admin-header">
             <div className="brand-logo">{BRAND.emoji}</div>
-            <h1>{BRAND.name}</h1>
+            <h1 className="brand-title">{BRAND.name}</h1>
           </header>
 
           <GameIntroBox variant="compact" />
@@ -417,7 +417,8 @@ function App() {
       {audioControls}
       <header className="admin-header admin-header-compact">
         <div className="admin-header-row">
-          <h1>{BRAND.emoji} {BRAND.name}</h1>
+          <span className="brand-logo-inline" aria-hidden>{BRAND.emoji}</span>
+          <h1 className="brand-title">{BRAND.name}</h1>
           <span className={`status-badge status-${room?.status}`}>{room?.status}</span>
         </div>
         <p className="hint hint-sm lobby-meta">
