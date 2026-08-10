@@ -17,21 +17,27 @@
 }
 
 .brand-title {
-  font-family: var(--font-brand);
-  font-size: clamp(2.75rem, 9vw, 4.25rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 5vw, 2.25rem);
   font-weight: 400;
   color: #fcfcfc;
-  letter-spacing: 0.04em;
-  line-height: 1.05;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
   margin-bottom: 0.75rem;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+  text-rendering: geometricPrecision;
   text-shadow:
+    2px 0 0 #1a0533,
     0 2px 0 #1a0533,
-    0 4px 12px rgba(0, 0, 0, 0.75),
-    0 0 28px rgba(0, 0, 0, 0.45);
+    2px 2px 0 #1a0533,
+    4px 4px 0 #1a0533,
+    0 0 20px rgba(0, 0, 0, 0.55);
 }
 
 .admin-header-row .brand-title {
-  font-size: clamp(2rem, 6vw, 3rem);
+  font-size: clamp(1.1rem, 3.5vw, 1.65rem);
   margin: 0;
 }
 
