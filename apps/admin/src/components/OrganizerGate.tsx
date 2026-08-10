@@ -6,7 +6,6 @@ type AuthState = 'loading' | 'ok' | 'denied';
 
 export function OrganizerGate({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>('loading');
-  const [organizerEmail, setOrganizerEmail] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,16 +23,10 @@ export function OrganizerGate({ children }: { children: ReactNode }) {
         }
 
         const meRes = await fetch(`${getServerUrl()}/api/auth/me`, { credentials: 'include' });
-        const me = (await meRes.json()) as {
-          role: string | null;
-          organizer?: { email: string };
-        };
+        const me = (await meRes.json()) as { role: string | null };
 
         if (me.role === 'organizer') {
-          if (!cancelled) {
-            setOrganizerEmail(me.organizer?.email ?? null);
-            setState('ok');
-          }
+          if (!cancelled) setState('ok');
           return;
         }
 
@@ -69,14 +62,5 @@ export function OrganizerGate({ children }: { children: ReactNode }) {
     );
   }
 
-  return (
-    <>
-      {organizerEmail && (
-        <div className="organizer-badge" title={organizerEmail}>
-          {organizerEmail}
-        </div>
-      )}
-      {children}
-    </>
-  );
+  return children;
 }
