@@ -312,7 +312,6 @@ function App() {
           <header className="admin-header">
             <div className="brand-logo">{BRAND.emoji}</div>
             <h1>{BRAND.name}</h1>
-            <p>{BRAND.tagline} · Панель ведущего</p>
           </header>
 
           <GameIntroBox variant="compact" />
