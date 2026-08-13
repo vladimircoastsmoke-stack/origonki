@@ -29,6 +29,7 @@ import {
   startCountdown,
   restartRace,
   newGame,
+  purgeStaleRooms,
   deleteRoom,
   removePlayer,
   getRaceResultsForRoom,
@@ -414,6 +415,7 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
+  purgeStaleRooms();
   for (const room of getActiveRooms()) {
     if (room.status === 'racing') {
       broadcastRoomUpdate(room.id);

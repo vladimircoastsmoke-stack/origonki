@@ -23,6 +23,7 @@ interface RoomRuntime extends Omit<Room, 'players'> {
   countdownInterval?: ReturnType<typeof setInterval>;
   adminSocketId?: string;
   raceFinishedPending?: boolean;
+  finishedAt?: number;
 }
 
 const rooms = new Map<string, RoomRuntime>();
@@ -31,9 +32,49 @@ export function getRoomCount(): number {
   return rooms.size;
 }
 
+function isRoomStale(room: RoomRuntime, now: number, aggressive: boolean): boolean {
+  const age = now - room.createdAt;
+
+  if (age >= GAME_CONFIG.ROOM_MAX_AGE_MS) return true;
+
+  if (room.status === 'finished') {
+    const finishedAge = room.finishedAt ? now - room.finishedAt : age;
+    const ttl = aggressive ? 10 * 60 * 1000 : GAME_CONFIG.ROOM_FINISHED_TTL_MS;
+    return finishedAge >= ttl;
+  }
+
+  if (room.status === 'lobby' && room.players.length === 0) {
+    const ttl = aggressive ? 0 : GAME_CONFIG.ROOM_EMPTY_LOBBY_TTL_MS;
+    return age >= ttl;
+  }
+
+  return false;
+}
+
+/** Удаляет заброшенные комнаты (пустые лобби, старые финиши). */
+export function purgeStaleRooms(aggressive = false): number {
+  const now = Date.now();
+  let removed = 0;
+
+  for (const [roomId, room] of rooms) {
+    if (isRoomStale(room, now, aggressive)) {
+      deleteRoom(roomId);
+      removed += 1;
+    }
+  }
+
+  return removed;
+}
+
 export function createRoom(maxPlayers: MaxPlayers, city: string, organizerId?: string): Room {
+  purgeStaleRooms();
+
   if (rooms.size >= GAME_CONFIG.MAX_ROOMS) {
-    throw new Error('Достигнут лимит одновременных комнат');
+    purgeStaleRooms(true);
+  }
+
+  if (rooms.size >= GAME_CONFIG.MAX_ROOMS) {
+    throw new Error('Достигнут лимит одновременных комнат — попробуйте через минуту');
   }
 
   let id = generateRoomId();
@@ -342,6 +383,7 @@ function tickRoom(room: RoomRuntime): void {
 function finishRace(room: RoomRuntime): void {
   stopGameLoop(room);
   room.status = 'finished';
+  room.finishedAt = Date.now();
   room.raceFinishedPending = true;
 }
 
@@ -367,6 +409,7 @@ export function restartRace(roomId: string): void {
   room.status = 'lobby';
   room.countdownValue = undefined;
   room.raceFinishedPending = false;
+  room.finishedAt = undefined;
   room.players.forEach((p) => {
     p.progress = 0;
     p.currentVolume = 0;

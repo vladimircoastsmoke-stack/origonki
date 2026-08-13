@@ -146,7 +146,13 @@ export const GAME_CONFIG = {
   MAX_PROGRESS: 100,
   BASE_SPEED: 0.08,
   SMOOTHING_ALPHA: 0.15,
-  MAX_ROOMS: 10,
+  MAX_ROOMS: 100,
+  /** Пустое лобби без игроков — удалить через 15 мин */
+  ROOM_EMPTY_LOBBY_TTL_MS: 15 * 60 * 1000,
+  /** Завершённая гонка — удалить через 30 мин */
+  ROOM_FINISHED_TTL_MS: 30 * 60 * 1000,
+  /** Любая комната — максимальный возраст 12 ч */
+  ROOM_MAX_AGE_MS: 12 * 60 * 60 * 1000,
   MAX_PLAYERS: 10,
   MAX_VOLUME: 1,
   LOGO_MAX_SIZE_MB: 2,
